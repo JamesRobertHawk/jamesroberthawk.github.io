@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: "en" }}">
+
+  {%- include head.html -%}
+
+  <body>
+
+    {%- include header.html -%}
+
+    <!-- Slide Show or featured image header-->
+    {%- if page.image -%}
+      <!-- Show featured image -->
+      <img src="{{page.image | relative_url}}" alt="" class="page-featured-image">
+
+      {%- if page.title -%}
+        <h2 class="page-tagline">{{ page.title }}</h2>
+      {%- else -%}
+        <h2 class="page-tagline">Blog</h2>
+      {%- endif -%}
+    {%- else -%}
+      <!-- Show flipbook-->
+      <section>
+        <img class="mySlides" src="/assets/Images/Cover2.png" style="width:100%" onclick="onSlide4Click()">
+        <img class="mySlides" src="/assets/Images/Cover3.png" style="width:100%" onclick="onSlide2Click()">
+        <img class="mySlides" src="/assets/Images/Cover4.png" style="width:100%" onclick="onSlide5Click()">
+        <img class="mySlides" src="/assets/Images/Cover5.png" style="width:100%" onclick="onSlide3Click()">
+      </section>
+      
+      <!-- Slide Show Script -->
+      <script src="/assets/Javascript/slideScript.js"></script>
+
+      <!-- Quick Description -->
+      <h2 class="page-tagline">Engine Programmer and Technical Artist</h2>
+    {%- endif -%}
+
+
+    <main class="page-content" aria-label="Content">
+      
+      <div id="wrappergrid">
+
+        <div id="wrapper-backgroundleft"></div>
+        <div id="wrapper-backgroundright"></div>
+        <div id="wrapper-left">{%- include left-bar.html -%}</div>
+        <div id="wrapper-main">{{ content }}</div>
+        <div id="wrapper-right">{%- include latest-posts.html -%}</div>
+        <div id="wrapper-footer">{%- include footer.html -%}</div>
+
+      </div>
+    </main>
+
+    
+
+  </body>
+
+</html>

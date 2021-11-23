@@ -1,0 +1,25 @@
+{%- if site.posts.size > 0 -%}
+  <h2 class="post-list-heading">{{ page.list_title | default: "Latest blog posts" }}</h2>
+  <ul class="post-list">
+
+
+
+    {% for i in (1..3) %}
+    <li>
+      <!--<img src="{{- site.posts[i].image | relative_url -}}" alt="" class="blog-image">>-->
+      {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
+      <span class="post-meta">{{ site.posts[i].date | date: date_format }}</span>
+      <h3>
+        <a class="post-link" href="{{ site.posts[i].url | relative_url }}">
+          {{ site.posts[i].title | escape }}
+        </a>
+      </h3>
+      {%- if site.show_excerpts -%}
+        {{ site.posts[i].excerpt }}
+      {%- endif -%}
+    </li>
+    {%- endfor -%}
+
+
+  <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | relative_url }}">via RSS</a></p>
+{%- endif -%}
