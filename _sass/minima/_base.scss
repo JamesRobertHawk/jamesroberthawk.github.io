@@ -191,7 +191,7 @@ pre {
   }
 }
 
-//New main layout system, TODO make responsive
+//New main layout system for pages which don't have columns
 #wrappergrid { 
   display: grid;
   grid-template-areas: 
@@ -212,7 +212,7 @@ pre {
       "contentmain"
       "contentright"
       "contentfooter";
-    grid-template-rows: 1fr 1000px 1fr 1fr;  
+    grid-template-rows: 1fr 1fr 1fr 1fr;  
     grid-template-columns: 1fr;
  }
 }
@@ -246,9 +246,135 @@ pre {
   grid-area: contentfooter;      
 }
 
-.left-info-bar {
-  
-  
+
+
+//New main layout for page that has columns
+#wrapperpagegrid { 
+  display: grid;
+  grid-template-areas: 
+    "backgroundleft contentleft contentmain contentmain contentright backgroundright"
+    "backgroundleft contentleft contentleft1 contentright1 contentright backgroundright"
+    "backgroundleft contentleft contentleft2 contentright2 contentright backgroundright"
+    "backgroundleft contentleft contentleft3 contentright3 contentright backgroundright"
+    "backgroundleft contentleft contentleft4 contentright4 contentright backgroundright"
+    "backgroundleft contentleft contentleft5 contentright5 contentright backgroundright"
+    "contentfooter contentfooter contentfooter contentfooter contentfooter contentfooter";
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 200px 400px 400px 200px 1fr;
+  grid-gap: 0px;
+  height: 100vh;
+  margin: 0;
+}
+
+//Responsive mobile layout
+@media all and (max-width: 1200px) {
+  #wrapperpagegrid { 
+    grid-template-areas: 
+      "backgroundleft contentleft contentleft backgroundright"
+      "backgroundleft contentmain contentmain backgroundright"
+      "backgroundleft contentleft1 contentright1 backgroundright"
+      "backgroundleft contentleft2 contentright2 backgroundright"
+      "backgroundleft contentleft3 contentright3 backgroundright"
+      "backgroundleft contentleft4 contentright4 backgroundright"
+      "backgroundleft contentleft5 contentright5 backgroundright"
+      "backgroundleft contentright contentright backgroundright"
+      "contentfooter contentfooter contentfooter contentfooter";
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;  
+    grid-template-columns: 1fr 400px 400px 1fr;
+ }
+}
+
+//Responsive mobile layout
+@media all and (max-width: 800px) {
+  #wrapperpagegrid { 
+    grid-template-areas: 
+      "contentleft"
+      "contentmain"
+      "contentleft1"
+      "contentright1"
+      "contentright2"
+      "contentleft2"
+      "contentleft3"
+      "contentright3"
+      "contentright4"
+      "contentleft4"
+      "contentleft5"
+      "contentright5"
+      "contentright"
+      "contentfooter";
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;  
+    grid-template-columns: 1fr;
+ }
+}
+
+
+#wrapperpage-backgroundleft {
+  grid-area: backgroundleft;
+  background-color:  $backgorund-color2;
+}
+#wrapperpage-backgroundright {
+  grid-area: backgroundright;
+  background-color: $backgorund-color2;
+}
+#wrapperpage-left {
+  grid-area: contentleft;
+  background-color:  $sidebars;
+  text-align: center;
+  padding: 10px;
+}
+#wrapperpage-contentmain {
+  grid-area: contentmain;
+  padding: 10px;
+  text-align: center;
+}
+#wrapperpage-contentleft1 {
+  grid-area: contentleft1;
+  padding: 10px;
+}
+#wrapperpage-contentright1 {
+  grid-area: contentright1;
+  padding: 10px;
+}
+#wrapperpage-contentleft2 {
+  grid-area: contentleft2;
+  padding: 10px;
+}
+#wrapperpage-contentright2 {
+  grid-area: contentright2;
+  padding: 10px;
+}
+#wrapperpage-contentleft3 {
+  grid-area: contentleft3;
+  padding: 10px;
+}
+#wrapperpage-contentright3 {
+  grid-area: contentright3;
+  padding: 10px;
+}
+#wrapperpage-contentleft4 {
+  grid-area: contentleft4;
+  padding: 10px;
+}
+#wrapperpage-contentright4 {
+  grid-area: contentright4;
+  padding: 10px;
+}
+#wrapperpage-contentleft5 {
+  grid-area: contentleft5;
+  padding: 10px;
+}
+#wrapperpage-contentright5 {
+  grid-area: contentright5;
+  padding: 10px;
+}
+#wrapperpage-right { 
+  grid-area: contentright;   
+  background-color: $sidebars; 
+  text-align: center;
+  padding: 10px;
+}
+#wrapperpage-footer { 
+  grid-area: contentfooter;      
 }
 
 

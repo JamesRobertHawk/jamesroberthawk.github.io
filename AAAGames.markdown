@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: pagewcolumns
 title: AAAGames
 permalink: /AAAGames/
 image: /assets/Images/Cover3.png

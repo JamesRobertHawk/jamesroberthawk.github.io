@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: pagewcolumns
 title: Assets
 permalink: /Assets/
 image: /assets/Images/Cover5.png

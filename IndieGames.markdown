@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: pagewcolumns
 title: IndieGames
 permalink: /IndieGames/
 image: /assets/Images/Cover3.png

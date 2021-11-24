@@ -1,0 +1,142 @@
+---
+layout: defaultwcolumns
+---
+
+<div id="wrapperpage-contentmain">
+  {{ content }}
+</div>
+
+
+{%- if page.contenttitle1 -%}
+  
+  <div id="wrapperpage-contentleft1">
+    <div class="column-contents">
+      <h1 class="post-title">{{ page.contenttitle1 | escape }}</h1>
+      {{ page.content1 }}
+
+      {%- if page.contentlink1 -%}
+        <a href="{{ page.contentlink1 }}" class="page-button-link">
+          <div class="page-button">
+            More info
+          </div>
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+  <div id="wrapperpage-contentright1">
+    <!-- Show image or video -->
+    {%- if page.contentimage1 -%}
+      <img src="{{page.contentimage1 | relative_url}}" alt="" class="">
+    {%- else -%}
+      <iframe width="360" height="215" src="{{ page.contentvideo1 }}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    {%- endif -%}
+  </div>
+  
+{%- endif -%}
+
+{%- if page.contenttitle2 -%}
+  
+  <div id="wrapperpage-contentleft2">
+    <!-- Show image or video -->
+    {%- if page.contentimage2 -%}
+      <img src="{{page.contentimage2 | relative_url}}" alt="" class="">
+    {%- else -%}
+      <iframe width="360" height="215" src="{{ page.contentvideo2 }}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    {%- endif -%}
+  </div>
+  <div id="wrapperpage-contentright2">
+    <div class="column-contents">
+      <h1 class="post-title">{{ page.contenttitle2 | escape }}</h1>
+      {{ page.content2 }}
+      {%- if page.contentlink2 -%}
+        <a href="{{ page.contentlink2 }}" class="page-button-link">
+          <div class="page-button">
+            More info
+          </div>
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+  
+{%- endif -%}
+
+{%- if page.contenttitle3 -%}
+  
+  <div id="wrapperpage-contentleft3">
+    <div class="column-contents">
+      <h1 class="post-title">{{ page.contenttitle3 | escape }}</h1>
+      {{ page.content3 }}
+      {%- if page.contentlink3 -%}
+        <a href="{{ page.contentlink3 }}" class="page-button-link">
+          <div class="page-button">
+            More info
+          </div>
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+  <div id="wrapperpage-contentright3">
+    <!-- Show image or video -->
+    {%- if page.contentimage3 -%}
+      <img src="{{page.contentimage3 | relative_url}}" alt="" class="">
+    {%- else -%}
+      <iframe width="360" height="215" src="{{ page.contentvideo3 }}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    {%- endif -%}
+  </div>
+  
+{%- endif -%}
+
+{%- if page.contenttitle4 -%}
+  
+  <div id="wrapperpage-contentleft4">
+    <div class="column-contents">
+      <h1 class="post-title">{{ page.contenttitle4 | escape }}</h1>
+      {{ page.content4 }}
+      {%- if page.contentlink4 -%}
+        <a href="{{ page.contentlink4 }}" class="page-button-link">
+          <div class="page-button">
+            More info
+          </div>
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+  <div id="wrapperpage-contentright4">
+    <!-- Show image or video -->
+    {%- if page.contentimage4 -%}
+      <img src="{{page.contentimage4 | relative_url}}" alt="" class="">
+    {%- else -%}
+      <iframe width="360" height="215" src="{{ page.contentvideo4 }}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    {%- endif -%}
+  </div>
+  
+{%- endif -%}
+
+{%- if page.contenttitle5 -%}
+  
+  <div id="wrapperpage-contentleft5">
+    <div class="column-contents">
+      <h1 class="post-title">{{ page.contenttitle5 | escape }}</h1>
+      {{ page.content5 }}
+      {%- if page.contentlink5 -%}
+        <a href="{{ page.contentlink5 }}" class="page-button-link">
+          <div class="page-button">
+            More info
+          </div>
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+  <div id="wrapperpage-contentright5">
+    <!-- Show image or video -->
+    {%- if page.contentimage5 -%}
+      <img src="{{page.contentimage5 | relative_url}}" alt="" class="">
+    {%- else -%}
+      <iframe width="360" height="215" src="{{ page.contentvideo5 }}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    {%- endif -%}
+  </div>
+  
+{%- endif -%}
+
+
+

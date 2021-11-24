@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: pagewcolumns
 title: HawkEngine
 permalink: /HawkEngine/
 image: /assets/Images/Cover2.png
