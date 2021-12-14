@@ -1,7 +1,7 @@
 ---
 layout: pagewcolumns
-title: HawkEngine
-permalink: /HawkEngine/
+title: IndieGameEngine
+permalink: /IndieGameEngine/
 image: /assets/Images/Cover2.png
 contenttitle1: "Modular Design"
 content1: TheIndieGameEngine is designed to be flexible. The core provides a solid starting point to create graphics software, promoting good practices and speeding up innovation.
@@ -11,4 +11,7 @@ content2: Experimentation is central to the design of the engine. The render pip
 contentvideo2: https://www.youtube.com/embed/rrO0J_agsCE
 ---
 
-HawkEngine is a brand new engine designed entirely from the ground up, able to run natively across all platforms. The engine aims to encourage innovation in the field of graphical software and games. 
+The Indie Game Engine is an engine designed entirely from the ground up, able to run natively across all platforms. The engine aims to encourage innovation in the field of graphical software and games. 
+
+
+I am currenly working on the next iteration of this engine which will be called the HawkEngine and hope to release in late 2022.

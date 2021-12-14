@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "Welcome to Jekyll1!"
-date:   2021-10-02 10:45:19 +0000
+title:  "Attaining PS1 era graphics in modern times."
+date:   2021-10-04 08:45:33 +0000
 categories: jekyll update
-image: /assets/Images/Cover2.png
+image: /assets/Images/ChaosScreen.png
 ---
 ![Alternative Text]({{ page.image | relative_url}})
 This is a tester

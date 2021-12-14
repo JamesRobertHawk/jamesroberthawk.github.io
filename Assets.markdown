@@ -13,4 +13,6 @@ contentvideo2: https://www.youtube.com/embed/JZU4ooC89Vw
 contentlink2: https://assetstore.unity.com/packages/3d/characters/humanoids/little-devil-character-enemy-or-principle-161770
 ---
 
-I have created a load of assets
+Though my qualification lie in software development, with a strong focus on gaming, I have developed my artistic skills in order to explore certain technologies and techniques as a solo developer. I have now many years experience with art packages such as Blender which allows me to create very quick and appealing prototypes, a skill which has been invaluable in my creation for both indie and AAA development.
+
+I decided to start to release some of the assets I had used for various experiments on the Unity store, more will follow.

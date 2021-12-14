@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "Welcome to Jekyll3!"
-date:   2021-10-02 10:45:19 +0000
-categories: jekyll update
-image: /assets/Images/Cover2.png
+title:  "Vertical slice postmortem for Chaos the devil."
+date:   2021-09-02 10:45:19 +0000
+categories: indiedev update
+image: /assets/Images/Blog/Dev1.png
 ---
 ![Alternative Text]({{ page.image | relative_url}})
 This is a tester
