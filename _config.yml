@@ -29,6 +29,7 @@ domain: jamesroberthawk.github.io
 url: "https://jamesroberthawk.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: jamesroberthawk
 github_username:  jamesroberthawk
+google_analytics: G-QYB26L4754
 
 # Build settings
 theme: minima
