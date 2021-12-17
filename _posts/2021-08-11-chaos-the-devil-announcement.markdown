@@ -3,7 +3,7 @@ layout: post
 title:  "Chaos the devil announcement"
 date:   2021-08-11 10:20:01 +0000
 categories: indiedev update
-image: /assets/Images/Blog/ChaosHeroScreen.jpg
+image: /assets/Images/Blog/Ps1Platformers.jpg
 ---
 
 # What is the game?
@@ -11,7 +11,8 @@ image: /assets/Images/Blog/ChaosHeroScreen.jpg
 
 The game will be written alongside a new iteration of my own engine and will prove the new upgrades and features planned for the engine.
 
-![image-title-here](/assets/images/Blog/Ps1Platformers.jpg){:class="blog-img"}
+![Playstation 1 Platformers](/assets/Images/Blog/Ps1Platformers.jpg){:class="blog-img"}
+
 
 # Why this game?
 Primarily I enjoy this kind of game, and I have fond memories of this era, but there are other considerations:
@@ -34,7 +35,7 @@ I am aiming to create the levels using the block system that evolved within the 
 
 Characters will be the a large outlay of time here which is the correct focus for a 3D platformer of this era, especially the player character. The good news here is that I have already developed a character which I am going to use, I am sure it will undergo changes at it is far too hi-res to hit the correct look, but it gets be off the ground running.
 
-![image-title-here](/assets/images/Cover5.jpg){:class="blog-img"}
+![Chaos the devil asset](/assets/Images/Cover5.jpg){:class="blog-img"}
 
 ## What about the story work required?
 Do you remember the story of Crash Bandicoot? Probably can be summed up in a line:

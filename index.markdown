@@ -17,5 +17,3 @@ I am James, a professional game developer traditionally educated as a software e
 
 ## What can I find here?
 On this site you will find info on all the projects I have or am currently working on. **Spoiler alert** it's all games related.
-
-## Have a click around, and see my contact info if you have questions.

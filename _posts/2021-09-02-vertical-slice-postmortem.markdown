@@ -3,17 +3,17 @@ layout: post
 title:  "Vertical slice postmortem for Chaos the devil."
 date:   2021-09-02 10:45:19 +0000
 categories: indiedev update
-image: /assets/Images/Blog/Dev1.jpg
+image: /assets/Images/ChaosTheDevilCover.jpg
 ---
 
-![image-title-here](/assets/images/Blog/VerticalSlice.jpg){:class="blog-img"}
+![Chaos the devil vertical slice screens](/assets/Images/Blog/VerticalSlice.jpg){:class="blog-img"}
 
 It is done, the game has reached vertical slice. The journey to this point was relatively smooth, but there were lots of design changes along the way as I decided to have a flexible game design.
 
 # Problem
 **The physics look great!**
 
-![image-title-here](/assets/images/Blog/PhysicsTooGood.jpg){:class="blog-img"}
+![Chaos the devil pre alpha physics](/assets/Images/Blog/PhysicsTooGood.jpg){:class="blog-img"}
 
 Using Bullet Physics for my physics implementation gave great results. The player could run around with good looking momentum, kick down doors which would rebound slightly on impact and kick down walls of cubes which would dance around the screen. It was quite fun running around that little physics scene. Just one problem, physics like this doesn't belong in a PS1 style game.
 
@@ -29,7 +29,7 @@ I fully backed out of simulated physics altogether and instead went back to basi
 # Problem
 
 **The character looks great**
-![image-title-here](/assets/images/Blog/CharacterDetail.jpg){:class="blog-img"}
+![Chaos the devil hi-res vs low res](/assets/Images/Blog/CharacterDetail.jpg){:class="blog-img"}
 
 A similar problem to above, however this time it was due to the character already being something I had created before the project. I always knew that the little critter was far far too complicated to be used without a very serious redesign.
 
@@ -48,13 +48,10 @@ The last issue of texturing the character also took from Crash Bandicoot. Origin
 
 # Problem
 **Graphics looking nice and crisp!**
-![image-title-here](/assets/images/Blog/Hi-res-dev.jpg){:class="blog-img"}
+![Chaos the devil pre alpha hi res](/assets/Images/Blog/Hi-res-dev.jpg){:class="blog-img"}
 
 Sort of counterintuitively, it takes effort to render badly these days. Textures look interpolate pretty nicely, resolutions even without AA look pretty good, vertex position interpolation is great, depthbuffer does a great job of displaying only pixels visible to the player. This was not the case in PS1 days, so it all has to change.
 
 # Solution
-![image-title-here](/assets/images/Blog/Low-res-dev.jpg){:class="blog-img"}
+![Chaos the devil pre alpha low res](/assets/Images/Blog/Low-res-dev.jpg){:class="blog-img"}
 I was always aware this was going to be the case, and I am going to write a blog post solely on the techniques I used to achieve a similar look to PS1. Again, just as before, my aim was not to match the techniques of the PS1, which would obviously give me that PS1 style, but to still use more modern techniques to fake it. I am not trying to make my life too hard, this is a big project and I need to make up some ground in places.
-
-### References
-[1]
