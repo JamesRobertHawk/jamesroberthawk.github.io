@@ -3,31 +3,81 @@ layout: post
 title:  "Chaos the devil announcement"
 date:   2021-08-11 10:20:01 +0000
 categories: indiedev update
-image: /assets/Images/Blog/ChaosHeroScreen.png
+image: /assets/Images/Blog/ChaosHeroScreen.jpg
 ---
-![Alternative Text]({{ page.image | relative_url}})
-This is a tester
 
-You’ll find this post in your `_posts` directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run `jekyll serve`, which launches a web server and auto-regenerates your site when a file is updated.
+# What is the game?
+**Chaos the devil** will aim to capture the spirit of the old school 3D platformers that were released on the original Playstation1.
 
-Jekyll requires blog post files to be named according to the following format:
+The game will be written alongside a new iteration of my own engine and will prove the new upgrades and features planned for the engine.
 
-`YEAR-MONTH-DAY-title.MARKUP`
+![image-title-here](/assets/images/Blog/Ps1Platformers.jpg){:class="blog-img"}
 
-Where `YEAR` is a four-digit number, `MONTH` and `DAY` are both two-digit numbers, and `MARKUP` is the file extension representing the format used in the file. After that, include the necessary front matter. Take a look at the source for this post to get an idea about how it works.
+# Why this game?
+Primarily I enjoy this kind of game, and I have fond memories of this era, but there are other considerations:
 
-Jekyll also offers powerful support for code snippets:
+## 3D platformers are a lot of work!
+I want to create a more **ambitious game** in scope in order to test the new block loading capabilities of the new engine. I am but one person, I'm not about to write and 3D MMORPG, so I have to limit myself. 3D platformers of this era were not a walk in the park to develop, they took teams of people and millions of dollars to create. Naughty Dog even had the deep pockets of Universal behind their title Crash Bandicoot[1], so
 
-{% highlight ruby %}
-def print_hi(name)
-  puts "Hi, #{name}"
-end
-print_hi('Tom')
-#=> prints 'Hi, Tom' to STDOUT.
-{% endhighlight %}
+**how do I think I have a chance of creating one?**
 
-Check out the [Jekyll docs][jekyll-docs] for more info on how to get the most out of Jekyll. File all bugs/feature requests at [Jekyll’s GitHub repo][jekyll-gh]. If you have questions, you can ask them on [Jekyll Talk][jekyll-talk].
+This comparison is not fair, these teams were creating their games on unproven tech which required novel ways to get the performance for their games to run. In 2020 things are very different, tech is mature, systems run a heck of a lot faster and I have access to hours and hours of talks from developers outlining challenges which need to be considered and how they overcame them.
 
-[jekyll-docs]: https://jekyllrb.com/docs/home
-[jekyll-gh]:   https://github.com/jekyll/jekyll
-[jekyll-talk]: https://talk.jekyllrb.com/
+## 3D platformers need a lot of art!
+True, and I'm not saying this project isn't ambitious.
+
+Low poly models take less time and allow more leeway than modern HD. Texturing on the PS1 was also notoriously lousy, another aspect of this era which should allow me to shave some time off asset development. 
+
+The graphics programming techniques required to support the assets will be much more simple than for modern titles. Previous projects ended up quickly getting frustrated with fancy graphical techniques, this made it difficult to pivot quickly in development, and could force me into optimisation much earlier than I wanted. This title will probably use vertex lighting with one light! This simplicity will allow me to reach for vertical slice within a year, manageable.
+
+I am aiming to create the levels using the block system that evolved within the last iteration of my engine. This method will feel rather like the level design of old titles such as DOOM, that is, no work will be needed to be done inside 3D software packages, the levels will be created by simple level blocks which can be shaped and textured.
+
+Characters will be the a large outlay of time here which is the correct focus for a 3D platformer of this era, especially the player character. The good news here is that I have already developed a character which I am going to use, I am sure it will undergo changes at it is far too hi-res to hit the correct look, but it gets be off the ground running.
+
+![image-title-here](/assets/images/Cover5.jpg){:class="blog-img"}
+
+## What about the story work required?
+Do you remember the story of Crash Bandicoot? Probably can be summed up in a line:
+
+*Some animal testing experiment goes wrong, now you are on the run?*
+
+What about Spyro?
+
+*Some film crew are making a documentary and then dragons get turned to stone, but not Spyro, he has to save them.*
+
+Croc in this instance had probably the best setup, with to be honest a very coherent intro.
+
+*Fluff balls find baby crocodile in a basket, raise it. Bad guy shows up and takes the king of the fluff balls and so Croc wants to help his friend.*
+
+Basically what I am saying is that story was never too central to these games, they didn't make much sense. Another great aspect here is that the levels didn't feel like they needed to make sense. There are huge drops to infinity across floating islands, lava everywhere and for some reason then everything turns to ice with no explanation in story. 
+
+## Killer soundtracks
+Not sure if it's just me, but I still listen to the soundtracks of these games even today. They were great, in fact all the audio design in these games was top notch.
+
+**Oh dear**
+
+My engine already boasts a really nice audio engine capable of loads of effects and 3D, everything that will be required to support this type of title. The issue is my skill when it comes to making audio is lacking.
+
+I have created the audio for previous titles and so I can certainly identify this is probably the area of greatest concern. I will give it a go, but I may have to outsource at least the music creation.
+
+# Milestones
+I have a full time job in the games industry and a wife pregnant with twins at the moment so needless to say I will be working part time (very part time) on this, so the milestones are certainly going to be flexible. I am committing to no deadlines of any kind and will not be going down the crowdfunding routes. 
+
+2021 - Vertical slice
+All features work, the game can be run, all menus are functional and some test levels run. Artwork is looking in keeping with PS1 era, no grey box but not final.
+
+2022 - Public Alpha
+The entire game works, all levels and assets are completed to an alpha standard. The game can be downloaded and tested by the public for feedback.
+
+2023 - Game Release v1
+Game will be released probably initially on Windows and probably in one store. I will then slowly roll out release on other platforms and stores based on game reception.
+
+
+### References
+[1]Crash Bandicoot Dev Story
+
+
+
+
+
+

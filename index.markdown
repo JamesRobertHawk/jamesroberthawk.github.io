@@ -4,61 +4,18 @@
 
 layout: home
 ---
-JamesRobertHawk is run by solo developer and graphic artist James Gilbert. James has decades of experience creating graphically intensive software for both large and small companies.
+# Hello there!
 
-By combining his zeal for software development with a flair for graphic design, James is able to create aesthetically beautiful software solutions and, due to a deep understanding of both process, his solutions run efficiently and elegantly.
+One way or another you have found yourself on my website.
 
-On this website you will find more information about his work, both released and in development. If you have any queries, don’t hesitate to get in touch via the contact page.
+**Congratulations!**
 
-JamesRobertHawk is run by solo developer and graphic artist James Gilbert. James has decades of experience creating graphically intensive software for both large and small companies.
+I really hope you are interested in game development, because if not these pages may be quite a chore for you.
 
-By combining his zeal for software development with a flair for graphic design, James is able to create aesthetically beautiful software solutions and, due to a deep understanding of both process, his solutions run efficiently and elegantly.
+## Who are you?
+I am James, a professional game developer traditionally educated as a software engineer, but with an interest in art asset creation too. Yep, both, odd.
 
-On this website you will find more information about his work, both released and in development. If you have any queries, don’t hesitate to get in touch via the contact page.
+## What can I find here?
+On this site you will find info on all the projects I have or am currently working on. **Spoiler alert** it's all games related.
 
-JamesRobertHawk is run by solo developer and graphic artist James Gilbert. James has decades of experience creating graphically intensive software for both large and small companies.
-
-By combining his zeal for software development with a flair for graphic design, James is able to create aesthetically beautiful software solutions and, due to a deep understanding of both process, his solutions run efficiently and elegantly.
-
-On this website you will find more information about his work, both released and in development. If you have any queries, don’t hesitate to get in touch via the contact page.
-
-JamesRobertHawk is run by solo developer and graphic artist James Gilbert. James has decades of experience creating graphically intensive software for both large and small companies.
-
-By combining his zeal for software development with a flair for graphic design, James is able to create aesthetically beautiful software solutions and, due to a deep understanding of both process, his solutions run efficiently and elegantly.
-
-On this website you will find more information about his work, both released and in development. If you have any queries, don’t hesitate to get in touch via the contact page.
-
-JamesRobertHawk is run by solo developer and graphic artist James Gilbert. James has decades of experience creating graphically intensive software for both large and small companies.
-
-By combining his zeal for software development with a flair for graphic design, James is able to create aesthetically beautiful software solutions and, due to a deep understanding of both process, his solutions run efficiently and elegantly.
-
-On this website you will find more information about his work, both released and in development. If you have any queries, don’t hesitate to get in touch via the contact page.
-
-JamesRobertHawk is run by solo developer and graphic artist James Gilbert. James has decades of experience creating graphically intensive software for both large and small companies.
-
-By combining his zeal for software development with a flair for graphic design, James is able to create aesthetically beautiful software solutions and, due to a deep understanding of both process, his solutions run efficiently and elegantly.
-
-On this website you will find more information about his work, both released and in development. If you have any queries, don’t hesitate to get in touch via the contact page.
-
-JamesRobertHawk is run by solo developer and graphic artist James Gilbert. James has decades of experience creating graphically intensive software for both large and small companies.
-
-By combining his zeal for software development with a flair for graphic design, James is able to create aesthetically beautiful software solutions and, due to a deep understanding of both process, his solutions run efficiently and elegantly.
-
-On this website you will find more information about his work, both released and in development. If you have any queries, don’t hesitate to get in touch via the contact page.
-
-JamesRobertHawk is run by solo developer and graphic artist James Gilbert. James has decades of experience creating graphically intensive software for both large and small companies.
-
-By combining his zeal for software development with a flair for graphic design, James is able to create aesthetically beautiful software solutions and, due to a deep understanding of both process, his solutions run efficiently and elegantly.
-
-On this website you will find more information about his work, both released and in development. If you have any queries, don’t hesitate to get in touch via the contact page.
-JamesRobertHawk is run by solo developer and graphic artist James Gilbert. James has decades of experience creating graphically intensive software for both large and small companies.
-
-By combining his zeal for software development with a flair for graphic design, James is able to create aesthetically beautiful software solutions and, due to a deep understanding of both process, his solutions run efficiently and elegantly.
-
-On this website you will find more information about his work, both released and in development. If you have any queries, don’t hesitate to get in touch via the contact page.
-
-JamesRobertHawk is run by solo developer and graphic artist James Gilbert. James has decades of experience creating graphically intensive software for both large and small companies.
-
-By combining his zeal for software development with a flair for graphic design, James is able to create aesthetically beautiful software solutions and, due to a deep understanding of both process, his solutions run efficiently and elegantly.
-
-On this website you will find more information about his work, both released and in development. If you have any queries, don’t hesitate to get in touch via the contact page.
+## Have a click around, and see my contact info if you have questions.
