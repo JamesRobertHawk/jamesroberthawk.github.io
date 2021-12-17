@@ -7,19 +7,19 @@
 <meta name="generator" content="Jekyll v4.2.1" />
 <meta property="og:title" content="Vertical slice postmortem for Chaos the devil." />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="This is a tester You’ll find this post in your _posts directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run jekyll serve, which launches a web server and auto-regenerates your site when a file is updated. Jekyll requires blog post files to be named according to the following format: YEAR-MONTH-DAY-title.MARKUP Where YEAR is a four-digit number, MONTH and DAY are both two-digit numbers, and MARKUP is the file extension representing the format used in the file. After that, include the necessary front matter. Take a look at the source for this post to get an idea about how it works. Jekyll also offers powerful support for code snippets: def print_hi(name) puts &quot;Hi, #{name}&quot; end print_hi(&#39;Tom&#39;) #=&gt; prints &#39;Hi, Tom&#39; to STDOUT. Check out the Jekyll docs for more info on how to get the most out of Jekyll. File all bugs/feature requests at Jekyll’s GitHub repo. If you have questions, you can ask them on Jekyll Talk." />
-<meta property="og:description" content="This is a tester You’ll find this post in your _posts directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run jekyll serve, which launches a web server and auto-regenerates your site when a file is updated. Jekyll requires blog post files to be named according to the following format: YEAR-MONTH-DAY-title.MARKUP Where YEAR is a four-digit number, MONTH and DAY are both two-digit numbers, and MARKUP is the file extension representing the format used in the file. After that, include the necessary front matter. Take a look at the source for this post to get an idea about how it works. Jekyll also offers powerful support for code snippets: def print_hi(name) puts &quot;Hi, #{name}&quot; end print_hi(&#39;Tom&#39;) #=&gt; prints &#39;Hi, Tom&#39; to STDOUT. Check out the Jekyll docs for more info on how to get the most out of Jekyll. File all bugs/feature requests at Jekyll’s GitHub repo. If you have questions, you can ask them on Jekyll Talk." />
+<meta name="description" content="It is done, the game has reached vertical slice. The journey to this point was relatively smooth, but there were lots of design changes along the way as I decided to have a flexible game design. Problem The physics look great! Using Bullet Physics for my physics implementation gave great results. The player could run around with good looking momentum, kick down doors which would rebound slightly on impact and kick down walls of cubes which would dance around the screen. It was quite fun running around that little physics scene. Just one problem, physics like this doesn’t belong in a PS1 style game. Solution This was my first experience of Bullet Physics and to be honest I fell into a developer trap and got a little carried away. Before I knew it I had ended up deviating quite far from the type of game I set out to do. I didn’t want to change the aim and come up with a new idea such as. ‘A modern take on the old PS1 style game!’ So there was only one thing for it, ripping out lots of how the physics was used. I fully backed out of simulated physics altogether and instead went back to basics just using colliders and rays for collision. Physics simulation now resides in the games lua scripts. What’s more, it’s super simple physics. As soon as this change was in the game started to feel much more akin to a 90s platformer. It also had the added bonus of being really easy to manage in the lua code. Problem The character looks great A similar problem to above, however this time it was due to the character already being something I had created before the project. I always knew that the little critter was far far too complicated to be used without a very serious redesign. Solution I needed a reference point to work to here, and using the power of the internet I found that the original Crash Bandicoot model was just 512 polygons. I challenged myself to reduce my character to 512 polygons in Blender. This is much harder than you may think. I had to deliberate over each polygon, in order to keep the character essence intact. The face was the most important part here, I needed to keep those expressive eyes, but everything else got heavily reduced in detail. Crash Bandicoot had to deal with serious hardware limitations which lead the devs to use a vertex animation style. I am hoping to gain some development ground here by relying on the fact I am not running on a PS1, it just has to look PS1 like. So I had another consideration, there needed to be enough vertex info around the joints to not give terrible creasing. The last issue of texturing the character also took from Crash Bandicoot. Originally the model I used was textured using the standard approach of diffusemap, normalmap and materialmap. All these were thrown out and simple vertex colouring was used. This had a few wins: In my opinion it hit the desired aesthetic right on the nose. Creating assets that are vertex coloured rather than texturemapped is so much quicker. Problem Graphics looking nice and crisp! Sort of counterintuitively, it takes effort to render badly these days. Textures look interpolate pretty nicely, resolutions even without AA look pretty good, vertex position interpolation is great, depthbuffer does a great job of displaying only pixels visible to the player. This was not the case in PS1 days, so it all has to change. Solution I was always aware this was going to be the case, and I am going to write a blog post solely on the techniques I used to achieve a similar look to PS1. Again, just as before, my aim was not to match the techniques of the PS1, which would obviously give me that PS1 style, but to still use more modern techniques to fake it. I am not trying to make my life too hard, this is a big project and I need to make up some ground in places. References [1]" />
+<meta property="og:description" content="It is done, the game has reached vertical slice. The journey to this point was relatively smooth, but there were lots of design changes along the way as I decided to have a flexible game design. Problem The physics look great! Using Bullet Physics for my physics implementation gave great results. The player could run around with good looking momentum, kick down doors which would rebound slightly on impact and kick down walls of cubes which would dance around the screen. It was quite fun running around that little physics scene. Just one problem, physics like this doesn’t belong in a PS1 style game. Solution This was my first experience of Bullet Physics and to be honest I fell into a developer trap and got a little carried away. Before I knew it I had ended up deviating quite far from the type of game I set out to do. I didn’t want to change the aim and come up with a new idea such as. ‘A modern take on the old PS1 style game!’ So there was only one thing for it, ripping out lots of how the physics was used. I fully backed out of simulated physics altogether and instead went back to basics just using colliders and rays for collision. Physics simulation now resides in the games lua scripts. What’s more, it’s super simple physics. As soon as this change was in the game started to feel much more akin to a 90s platformer. It also had the added bonus of being really easy to manage in the lua code. Problem The character looks great A similar problem to above, however this time it was due to the character already being something I had created before the project. I always knew that the little critter was far far too complicated to be used without a very serious redesign. Solution I needed a reference point to work to here, and using the power of the internet I found that the original Crash Bandicoot model was just 512 polygons. I challenged myself to reduce my character to 512 polygons in Blender. This is much harder than you may think. I had to deliberate over each polygon, in order to keep the character essence intact. The face was the most important part here, I needed to keep those expressive eyes, but everything else got heavily reduced in detail. Crash Bandicoot had to deal with serious hardware limitations which lead the devs to use a vertex animation style. I am hoping to gain some development ground here by relying on the fact I am not running on a PS1, it just has to look PS1 like. So I had another consideration, there needed to be enough vertex info around the joints to not give terrible creasing. The last issue of texturing the character also took from Crash Bandicoot. Originally the model I used was textured using the standard approach of diffusemap, normalmap and materialmap. All these were thrown out and simple vertex colouring was used. This had a few wins: In my opinion it hit the desired aesthetic right on the nose. Creating assets that are vertex coloured rather than texturemapped is so much quicker. Problem Graphics looking nice and crisp! Sort of counterintuitively, it takes effort to render badly these days. Textures look interpolate pretty nicely, resolutions even without AA look pretty good, vertex position interpolation is great, depthbuffer does a great job of displaying only pixels visible to the player. This was not the case in PS1 days, so it all has to change. Solution I was always aware this was going to be the case, and I am going to write a blog post solely on the techniques I used to achieve a similar look to PS1. Again, just as before, my aim was not to match the techniques of the PS1, which would obviously give me that PS1 style, but to still use more modern techniques to fake it. I am not trying to make my life too hard, this is a big project and I need to make up some ground in places. References [1]" />
 <link rel="canonical" href="http://localhost:4000/indiedev/update/2021/09/02/vertical-slice-postmortem.html" />
 <meta property="og:url" content="http://localhost:4000/indiedev/update/2021/09/02/vertical-slice-postmortem.html" />
 <meta property="og:site_name" content="James Hawk" />
-<meta property="og:image" content="http://localhost:4000/assets/Images/Blog/Dev1.png" />
+<meta property="og:image" content="http://localhost:4000/assets/Images/Blog/Dev1.jpg" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2021-09-02T10:45:19+00:00" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta property="twitter:image" content="http://localhost:4000/assets/Images/Blog/Dev1.png" />
+<meta property="twitter:image" content="http://localhost:4000/assets/Images/Blog/Dev1.jpg" />
 <meta property="twitter:title" content="Vertical slice postmortem for Chaos the devil." />
 <script type="application/ld+json">
-{"image":"http://localhost:4000/assets/Images/Blog/Dev1.png","@type":"BlogPosting","headline":"Vertical slice postmortem for Chaos the devil.","dateModified":"2021-09-02T10:45:19+00:00","datePublished":"2021-09-02T10:45:19+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/indiedev/update/2021/09/02/vertical-slice-postmortem.html"},"url":"http://localhost:4000/indiedev/update/2021/09/02/vertical-slice-postmortem.html","description":"This is a tester You’ll find this post in your _posts directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run jekyll serve, which launches a web server and auto-regenerates your site when a file is updated. Jekyll requires blog post files to be named according to the following format: YEAR-MONTH-DAY-title.MARKUP Where YEAR is a four-digit number, MONTH and DAY are both two-digit numbers, and MARKUP is the file extension representing the format used in the file. After that, include the necessary front matter. Take a look at the source for this post to get an idea about how it works. Jekyll also offers powerful support for code snippets: def print_hi(name) puts &quot;Hi, #{name}&quot; end print_hi(&#39;Tom&#39;) #=&gt; prints &#39;Hi, Tom&#39; to STDOUT. Check out the Jekyll docs for more info on how to get the most out of Jekyll. File all bugs/feature requests at Jekyll’s GitHub repo. If you have questions, you can ask them on Jekyll Talk.","@context":"https://schema.org"}</script>
+{"image":"http://localhost:4000/assets/Images/Blog/Dev1.jpg","@type":"BlogPosting","headline":"Vertical slice postmortem for Chaos the devil.","dateModified":"2021-09-02T10:45:19+00:00","datePublished":"2021-09-02T10:45:19+00:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/indiedev/update/2021/09/02/vertical-slice-postmortem.html"},"url":"http://localhost:4000/indiedev/update/2021/09/02/vertical-slice-postmortem.html","description":"It is done, the game has reached vertical slice. The journey to this point was relatively smooth, but there were lots of design changes along the way as I decided to have a flexible game design. Problem The physics look great! Using Bullet Physics for my physics implementation gave great results. The player could run around with good looking momentum, kick down doors which would rebound slightly on impact and kick down walls of cubes which would dance around the screen. It was quite fun running around that little physics scene. Just one problem, physics like this doesn’t belong in a PS1 style game. Solution This was my first experience of Bullet Physics and to be honest I fell into a developer trap and got a little carried away. Before I knew it I had ended up deviating quite far from the type of game I set out to do. I didn’t want to change the aim and come up with a new idea such as. ‘A modern take on the old PS1 style game!’ So there was only one thing for it, ripping out lots of how the physics was used. I fully backed out of simulated physics altogether and instead went back to basics just using colliders and rays for collision. Physics simulation now resides in the games lua scripts. What’s more, it’s super simple physics. As soon as this change was in the game started to feel much more akin to a 90s platformer. It also had the added bonus of being really easy to manage in the lua code. Problem The character looks great A similar problem to above, however this time it was due to the character already being something I had created before the project. I always knew that the little critter was far far too complicated to be used without a very serious redesign. Solution I needed a reference point to work to here, and using the power of the internet I found that the original Crash Bandicoot model was just 512 polygons. I challenged myself to reduce my character to 512 polygons in Blender. This is much harder than you may think. I had to deliberate over each polygon, in order to keep the character essence intact. The face was the most important part here, I needed to keep those expressive eyes, but everything else got heavily reduced in detail. Crash Bandicoot had to deal with serious hardware limitations which lead the devs to use a vertex animation style. I am hoping to gain some development ground here by relying on the fact I am not running on a PS1, it just has to look PS1 like. So I had another consideration, there needed to be enough vertex info around the joints to not give terrible creasing. The last issue of texturing the character also took from Crash Bandicoot. Originally the model I used was textured using the standard approach of diffusemap, normalmap and materialmap. All these were thrown out and simple vertex colouring was used. This had a few wins: In my opinion it hit the desired aesthetic right on the nose. Creating assets that are vertex coloured rather than texturemapped is so much quicker. Problem Graphics looking nice and crisp! Sort of counterintuitively, it takes effort to render badly these days. Textures look interpolate pretty nicely, resolutions even without AA look pretty good, vertex position interpolation is great, depthbuffer does a great job of displaying only pixels visible to the player. This was not the case in PS1 days, so it all has to change. Solution I was always aware this was going to be the case, and I am going to write a blog post solely on the techniques I used to achieve a similar look to PS1. Again, just as before, my aim was not to match the techniques of the PS1, which would obviously give me that PS1 style, but to still use more modern techniques to fake it. I am not trying to make my life too hard, this is a big project and I need to make up some ground in places. References [1]","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="James Hawk" /></head>
 <body><header class="site-header" role="banner">
@@ -34,12 +34,12 @@
           </span>
         </label>
 
-        <div class="trigger"><a class="page-link" href="/AAAGames/">AAAGames</a><a class="page-link" href="/Assets/">Assets</a><a class="page-link" href="/contact/">Contact</a><a class="page-link" href="/IndieGameEngine/">IndieGameEngine</a><a class="page-link" href="/IndieGames/">IndieGames</a><a class="page-link" href="/blog/">Blog</a>
+        <div class="trigger"><a class="page-link" href="/AAAGames/">AAAGames</a><a class="page-link" href="/Assets/">Assets</a><a class="page-link" href="/IndieGameEngine/">IndieGameEngine</a><a class="page-link" href="/IndieGames/">IndieGames</a><a class="page-link" href="/blog/">Blog</a>
         </div>
       </nav></div>
 </header>
 <!-- Slide Show or featured image header--><!-- Show featured image -->
-      <img src="/assets/Images/Blog/Dev1.png" alt="" class="page-featured-image"><h2 class="page-tagline">Vertical slice postmortem for Chaos the devil.</h2><main class="page-content" aria-label="Content">
+      <img src="/assets/Images/Blog/Dev1.jpg" alt="" class="page-featured-image"><h2 class="page-tagline">Vertical slice postmortem for Chaos the devil.</h2><main class="page-content" aria-label="Content">
       
       <div id="wrappergrid">
 
@@ -48,14 +48,10 @@
         <div id="wrapper-left"><div class="left-info-bar">
 
 
-  <img src="/assets/Images/headshot.jpeg" alt="" class="headshot">
+  <img src="/assets/Images/headshot.jpg" alt="" class="headshot">
   
   <div>
     James Hawk
-  </div>
-
-  <div>
-    CV
   </div>
 
   <p>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.</p>
@@ -73,27 +69,59 @@
   </header>
 
   <div class="post-content e-content" itemprop="articleBody">
-    <p><img src="/assets/Images/Blog/Dev1.png" alt="Alternative Text" />
-This is a tester</p>
+    <p><img src="/assets/images/Blog/VerticalSlice.jpg" alt="image-title-here" class="blog-img" /></p>
 
-<p>You’ll find this post in your <code class="language-plaintext highlighter-rouge">_posts</code> directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run <code class="language-plaintext highlighter-rouge">jekyll serve</code>, which launches a web server and auto-regenerates your site when a file is updated.</p>
+<p>It is done, the game has reached vertical slice. The journey to this point was relatively smooth, but there were lots of design changes along the way as I decided to have a flexible game design.</p>
 
-<p>Jekyll requires blog post files to be named according to the following format:</p>
+<h1 id="problem">Problem</h1>
+<p><strong>The physics look great!</strong></p>
 
-<p><code class="language-plaintext highlighter-rouge">YEAR-MONTH-DAY-title.MARKUP</code></p>
+<p><img src="/assets/images/Blog/PhysicsTooGood.jpg" alt="image-title-here" class="blog-img" /></p>
 
-<p>Where <code class="language-plaintext highlighter-rouge">YEAR</code> is a four-digit number, <code class="language-plaintext highlighter-rouge">MONTH</code> and <code class="language-plaintext highlighter-rouge">DAY</code> are both two-digit numbers, and <code class="language-plaintext highlighter-rouge">MARKUP</code> is the file extension representing the format used in the file. After that, include the necessary front matter. Take a look at the source for this post to get an idea about how it works.</p>
+<p>Using Bullet Physics for my physics implementation gave great results. The player could run around with good looking momentum, kick down doors which would rebound slightly on impact and kick down walls of cubes which would dance around the screen. It was quite fun running around that little physics scene. Just one problem, physics like this doesn’t belong in a PS1 style game.</p>
 
-<p>Jekyll also offers powerful support for code snippets:</p>
+<h1 id="solution">Solution</h1>
+<p>This was my first experience of Bullet Physics and to be honest I fell into a developer trap and got a little carried away. Before I knew it I had ended up deviating quite far from the type of game I set out to do. I didn’t want to change the aim and come up with a new idea such as.</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">print_hi</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
-  <span class="nb">puts</span> <span class="s2">"Hi, </span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">"</span>
-<span class="k">end</span>
-<span class="n">print_hi</span><span class="p">(</span><span class="s1">'Tom'</span><span class="p">)</span>
-<span class="c1">#=&gt; prints 'Hi, Tom' to STDOUT.</span></code></pre></figure>
+<p><em>‘A modern take on the old PS1 style game!’</em></p>
 
-<p>Check out the <a href="https://jekyllrb.com/docs/home">Jekyll docs</a> for more info on how to get the most out of Jekyll. File all bugs/feature requests at <a href="https://github.com/jekyll/jekyll">Jekyll’s GitHub repo</a>. If you have questions, you can ask them on <a href="https://talk.jekyllrb.com/">Jekyll Talk</a>.</p>
+<p>So there was only one thing for it, ripping out lots of how the physics was used.</p>
 
+<p>I fully backed out of simulated physics altogether and instead went back to basics just using colliders and rays for collision. Physics simulation now resides in the games lua scripts. What’s more, it’s super simple physics. As soon as this change was in the game started to feel much more akin to a 90s platformer. It also had the added bonus of being really easy to manage in the lua code.</p>
+
+<h1 id="problem-1">Problem</h1>
+
+<p><strong>The character looks great</strong>
+<img src="/assets/images/Blog/CharacterDetail.jpg" alt="image-title-here" class="blog-img" /></p>
+
+<p>A similar problem to above, however this time it was due to the character already being something I had created before the project. I always knew that the little critter was far far too complicated to be used without a very serious redesign.</p>
+
+<h1 id="solution-1">Solution</h1>
+
+<p>I needed a reference point to work to here, and using the power of the internet I found that the original Crash Bandicoot model was just 512 polygons.</p>
+
+<p>I challenged myself to reduce my character to 512 polygons in Blender. This is much harder than you may think. I had to deliberate over each polygon, in order to keep the character essence intact. The face was the most important part here, I needed to keep those expressive eyes, but everything else got heavily reduced in detail.</p>
+
+<p>Crash Bandicoot had to deal with serious hardware limitations which lead the devs to use a vertex animation style. I am hoping to gain some development ground here by relying on the fact I am not running on a PS1, it just has to look PS1 like. So I had another consideration, there needed to be enough vertex info around the joints to not give terrible creasing.</p>
+
+<p>The last issue of texturing the character also took from Crash Bandicoot. Originally the model I used was textured using the standard approach of diffusemap, normalmap and materialmap. All these were thrown out and simple vertex colouring was used. This had a few wins:</p>
+<ol>
+  <li>In my opinion it hit the desired aesthetic right on the nose.</li>
+  <li>Creating assets that are vertex coloured rather than texturemapped is so much quicker.</li>
+</ol>
+
+<h1 id="problem-2">Problem</h1>
+<p><strong>Graphics looking nice and crisp!</strong>
+<img src="/assets/images/Blog/Hi-res-dev.jpg" alt="image-title-here" class="blog-img" /></p>
+
+<p>Sort of counterintuitively, it takes effort to render badly these days. Textures look interpolate pretty nicely, resolutions even without AA look pretty good, vertex position interpolation is great, depthbuffer does a great job of displaying only pixels visible to the player. This was not the case in PS1 days, so it all has to change.</p>
+
+<h1 id="solution-2">Solution</h1>
+<p><img src="/assets/images/Blog/Low-res-dev.jpg" alt="image-title-here" class="blog-img" />
+I was always aware this was going to be the case, and I am going to write a blog post solely on the techniques I used to achieve a similar look to PS1. Again, just as before, my aim was not to match the techniques of the PS1, which would obviously give me that PS1 style, but to still use more modern techniques to fake it. I am not trying to make my life too hard, this is a big project and I need to make up some ground in places.</p>
+
+<h3 id="references">References</h3>
+<p>[1]</p>
 
   </div><a class="u-url" href="/indiedev/update/2021/09/02/vertical-slice-postmortem.html" hidden></a>
 </article>
@@ -104,19 +132,19 @@ This is a tester</p>
 
     
     <li><h3>
-        <a class="post-link" href="/jekyll/update/2021/10/04/attaining-ps1-era-graphics.html">
-          Attaining PS1 era graphics in modern times.
-        </a>
-      </h3>
-      <span class="post-meta">Oct 4, 2021</span>
-      <img src="/assets/Images/ChaosScreen.png" alt="" class=""></li>
-    <li><h3>
         <a class="post-link" href="/indiedev/update/2021/09/02/vertical-slice-postmortem.html">
           Vertical slice postmortem for Chaos the devil.
         </a>
       </h3>
       <span class="post-meta">Sep 2, 2021</span>
-      <img src="/assets/Images/Blog/Dev1.png" alt="" class=""></li><p class="rss-subscribe">subscribe <a href="/feed.xml">via RSS</a></p></div>
+      <img src="/assets/Images/Blog/Dev1.jpg" alt="" class=""></li>
+    <li><h3>
+        <a class="post-link" href="/indiedev/update/2021/08/11/chaos-the-devil-announcement.html">
+          Chaos the devil announcement
+        </a>
+      </h3>
+      <span class="post-meta">Aug 11, 2021</span>
+      <img src="/assets/Images/Blog/ChaosHeroScreen.jpg" alt="" class=""></li><p class="rss-subscribe">subscribe <a href="/feed.xml">via RSS</a></p></div>
         <div id="wrapper-footer"><footer class="site-footer h-card">
   <data class="u-url" href="/"></data>
 
