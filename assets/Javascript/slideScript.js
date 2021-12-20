@@ -18,22 +18,23 @@ function carousel() {
 	setTimeout(carousel,4000);
 }
 
-function onSlide4Click(){
-	window.location.href = "about.html";
-}
 
 function onSlide1Click(){
-	window.location.href = "planeCrazy.html";
+	window.location.href = "IndieGameEngine/";
 }
 
 function onSlide2Click(){
-	window.location.href = "theIndieGameEngine.html";
+	window.location.href = "IndieGames/";
 }
 
 function onSlide3Click(){
-	window.location.href = "slideToSurvive.html";
+	window.location.href = "IndieGames/";
+}
+
+function onSlide4Click(){
+	window.location.href = "Assets/";
 }
 
 function onSlide5Click(){
-	window.location.href = "artAssets.html";
+	window.location.href = "Assets/";
 }

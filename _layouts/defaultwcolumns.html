@@ -19,12 +19,7 @@
       {%- endif -%}
     {%- else -%}
       <!-- Show flipbook-->
-      <section>
-        <img class="mySlides" src="/assets/Images/EngineCover.jpg" style="width:100%" onclick="onSlide4Click()">
-        <img class="mySlides" src="/assets/Images/SlideToSurviveCover.jpg" style="width:100%" onclick="onSlide2Click()">
-        <img class="mySlides" src="/assets/Images/VoxelCityCover.jpg" style="width:100%" onclick="onSlide5Click()">
-        <img class="mySlides" src="/assets/Images/LittleDevilCover.jpg" style="width:100%" onclick="onSlide3Click()">
-      </section>
+      {%- include flipbook.html -%}
       
       <!-- Slide Show Script -->
       <script src="/assets/Javascript/slideScript.js"></script>
