@@ -223,6 +223,8 @@ table td { border: 1px solid #e8e8e8; }
 
 .blogpage-entry { padding-bottom: 50px; }
 
+.blog-extract-content { text-align: justify; }
+
 .column { float: left; width: 50%; }
 
 .column-contents { padding: 15px; }
