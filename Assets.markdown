@@ -2,7 +2,7 @@
 layout: pagewcolumns
 title: Assets
 permalink: /Assets/
-image: /assets/Images/Cover5.jpg
+image: /assets/Images/LittleDevilCover.jpg
 contenttitle1: "Voxel City Tileset"
 content1: The Voxel City Tileset is created to make large stylized cityscapes easily. This tileset looks great using both orthographic and perspective cameras, and can produce large city environments quickly.
 contentvideo1: https://www.youtube.com/embed/genbJsdgBRM

@@ -35,7 +35,7 @@ I am aiming to create the levels using the block system that evolved within the 
 
 Characters will be the a large outlay of time here which is the correct focus for a 3D platformer of this era, especially the player character. The good news here is that I have already developed a character which I am going to use, I am sure it will undergo changes at it is far too hi-res to hit the correct look, but it gets be off the ground running.
 
-![Chaos the devil asset](/assets/Images/Cover5.jpg){:class="blog-img"}
+![Chaos the devil asset](/assets/Images/LittleDevilCover.jpg){:class="blog-img"}
 
 ## What about the story work required?
 Do you remember the story of Crash Bandicoot? Probably can be summed up in a line:

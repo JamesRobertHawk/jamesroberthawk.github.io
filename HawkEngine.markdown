@@ -2,7 +2,7 @@
 layout: pagewcolumns
 title: IndieGameEngine
 permalink: /IndieGameEngine/
-image: /assets/Images/Cover2.jpg
+image: /assets/Images/EngineCover.jpg
 contenttitle1: "Modular Design"
 content1: TheIndieGameEngine is designed to be flexible. The core provides a solid starting point to create graphics software, promoting good practices and speeding up innovation.
 contentimage1: /assets/Images/Modular.jpg
