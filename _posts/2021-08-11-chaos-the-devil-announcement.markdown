@@ -13,7 +13,6 @@ The game will be written alongside a new iteration of my own engine and will pro
 
 ![Playstation 1 Platformers](/assets/Images/Blog/Ps1Platformers.jpg){:class="blog-img"}
 
-
 # Why this game?
 Primarily I enjoy this kind of game, and I have fond memories of this era, but there are other considerations:
 
@@ -29,11 +28,11 @@ True, and I'm not saying this project isn't ambitious.
 
 Low poly models take less time and allow more leeway than modern HD. Texturing on the PS1 was also notoriously lousy, another aspect of this era which should allow me to shave some time off asset development. 
 
-The graphics programming techniques required to support the assets will be much more simple than for modern titles. Previous projects ended up quickly getting frustrated with fancy graphical techniques, this made it difficult to pivot quickly in development, and could force me into optimisation much earlier than I wanted. This title will probably use vertex lighting with one light! This simplicity will allow me to reach for vertical slice within a year, manageable.
+The graphics programming techniques required to support the assets will be much more simple than for modern titles. Previous projects ended up quickly getting frustrated with fancy graphical techniques which made it difficult to pivot quickly in development. For example, I can imagine that this title will probably use vertex lighting with one light! It is my hope that this simplicity will allow me to reach for vertical slice within a year.
 
-I am aiming to create the levels using the block system that evolved within the last iteration of my engine. This method will feel rather like the level design of old titles such as DOOM, that is, no work will be needed to be done inside 3D software packages, the levels will be created by simple level blocks which can be shaped and textured.
+I am aiming to create the levels using the block system that evolved within the last iteration of my engine. This method will feel rather like the level design of old titles such as DOOM[2], that is, no work will be needed to be done inside 3D software packages, the levels will be created by simple level blocks which can be shaped and textured.
 
-Characters will be the a large outlay of time here which is the correct focus for a 3D platformer of this era, especially the player character. The good news here is that I have already developed a character which I am going to use, I am sure it will undergo changes at it is far too hi-res to hit the correct look, but it gets be off the ground running.
+I predict that characters will be the a large outlay of time here, for the art creation, engine support and accoumpanying tool creation. I think this is a correct focus for a 3D platformer of this era, and certainly for the player character. The good news here is that I have already developed a character which I am going to use, I am sure it will undergo changes at it is far too hi-res to hit the correct look, but it gets be off the ground running.
 
 ![Chaos the devil asset](/assets/Images/LittleDevilCover.jpg){:class="blog-img"}
 
@@ -50,7 +49,7 @@ Croc in this instance had probably the best setup, with to be honest a very cohe
 
 *Fluff balls find baby crocodile in a basket, raise it. Bad guy shows up and takes the king of the fluff balls and so Croc wants to help his friend.*
 
-Basically what I am saying is that story was never too central to these games, they didn't make much sense. Another great aspect here is that the levels didn't feel like they needed to make sense. There are huge drops to infinity across floating islands, lava everywhere and for some reason then everything turns to ice with no explanation in story. 
+Basically what I am saying is that story was never too central to these games, they didn't make much sense. Another great aspect here is that the levels didn't feel like they needed to make sense either. There are huge drops to infinity across floating islands, lava everywhere and for some reason then everything turns to ice with no explanation in story.
 
 ## Killer soundtracks
 Not sure if it's just me, but I still listen to the soundtracks of these games even today. They were great, in fact all the audio design in these games was top notch.
@@ -59,24 +58,27 @@ Not sure if it's just me, but I still listen to the soundtracks of these games e
 
 My engine already boasts a really nice audio engine capable of loads of effects and 3D, everything that will be required to support this type of title. The issue is my skill when it comes to making audio is lacking.
 
-I have created the audio for previous titles and so I can certainly identify this is probably the area of greatest concern. I will give it a go, but I may have to outsource at least the music creation.
+I have created the audio for previous titles and so I can identify this is probably the area of greatest concern. I will give it a go, but I may have to outsource at least the music creation.
 
 # Milestones
-I have a full time job in the games industry and a wife pregnant with twins at the moment so needless to say I will be working part time (very part time) on this, so the milestones are certainly going to be flexible. I am committing to no deadlines of any kind and will not be going down the crowdfunding routes. 
+I have a full time job in the games industry and a wife pregnant with twins at the moment so needless to say I will be working part time (very part time). The  following milestones are certainly going to be flexible. I am committing to no deadlines of any kind and will not be going down the crowdfunding routes. This project is a passion project.
 
 2021 - Vertical slice
-All features work, the game can be run, all menus are functional and some test levels run. Artwork is looking in keeping with PS1 era, no grey box but not final.
+All features work, the game can be run, all menus are functional and some test levels run. Artwork is looking in keeping with PS1 era, no grey box but not at all final.
 
-2022 - Public Alpha
-The entire game works, all levels and assets are completed to an alpha standard. The game can be downloaded and tested by the public for feedback.
+2022 - First public announcement, marketing and game design
+Some simple marketing starts, see if there is any interest out there for a title such as this. Doesn't matter if not, I find preparing work for public consumption is a good way to push away some scrappy details and give a little polish to early work. Game story and design of characters begins.
 
-2023 - Game Release v1
+2023 - Public Alpha
+Game is completely working, time to get some feedback from the public.
+
+2023-2024 - Game Release v1
 Game will be released probably initially on Windows and probably in one store. I will then slowly roll out release on other platforms and stores based on game reception.
 
 
 ### References
 [1]Crash Bandicoot Dev Story
-
+[2]DOOM style level design
 
 
 
