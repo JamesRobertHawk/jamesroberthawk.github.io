@@ -4,6 +4,7 @@
 
 layout: home
 title: index
+featuredpost: "Vertical slice postmortem for Chaos the devil."
 ---
 # Hello there!
 

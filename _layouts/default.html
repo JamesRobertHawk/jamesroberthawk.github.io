@@ -13,8 +13,16 @@
       <img src="{{page.image | relative_url}}" alt="" class="page-featured-image">
 
       {%- if page.title -%}
-        <h2 class="page-tagline">{{ page.title }}</h2>
+        {%- if page.nextpost -%}
+          <!--Blog post-->
+          <h2 class="page-tagline">Post</h2>
+        {%- else -%}
+          <!--Normal page-->
+          <h2 class="page-tagline">{{ page.title }}</h2>
+        {%- endif -%}
+
       {%- else -%}
+        <!--Blog home-->
         <h2 class="page-tagline">Blog</h2>
       {%- endif -%}
     {%- else -%}
