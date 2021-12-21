@@ -19,7 +19,7 @@ The game will be written alongside a new iteration of my own engine and will pro
 Primarily I enjoy this kind of game, and I have fond memories of this era, but there are other considerations:
 
 ## 3D platformers are a lot of work!
-I want to create a more **ambitious game** in scope in order to test the new block loading capabilities of the new engine. I am but one person, I'm not about to write and 3D MMORPG, so I have to limit myself. 3D platformers of this era were not a walk in the park to develop, they took teams of people and millions of dollars to create. Naughty Dog even had the deep pockets of Universal behind their title Crash Bandicoot[1], so
+I want to create a more **ambitious game** in scope in order to test the new block loading capabilities of the new engine. I am but one person, I'm not about to write and 3D MMORPG, so I have to limit myself. 3D platformers of this era were not a walk in the park to develop, they took teams of people and millions of dollars to create. Naughty Dog even had the deep pockets of Universal behind their title [Crash Bandicoot](https://www.youtube.com/watch?v=pSHj5UKSylk), so
 
 **how do I think I have a chance of creating one?**
 
@@ -32,7 +32,7 @@ Low poly models take less time and allow more leeway than modern HD. Texturing o
 
 The graphics programming techniques required to support the assets will be much more simple than for modern titles. Previous projects ended up quickly getting frustrated with fancy graphical techniques which made it difficult to pivot quickly in development. For example, I can imagine that this title will probably use vertex lighting with one light! It is my hope that this simplicity will allow me to reach for vertical slice within a year.
 
-I am aiming to create the levels using the block system that evolved within the last iteration of my engine. This method will feel rather like the level design of old titles such as DOOM[2], that is, no work will be needed to be done inside 3D software packages, the levels will be created by simple level blocks which can be shaped and textured.
+I am aiming to create the levels using the block system that evolved within the last iteration of my engine. This method will feel rather like the level design of old titles such as [DOOM](https://www.youtube.com/watch?v=ptHurafdCoQ), that is, no work will be needed to be done inside 3D software packages, the levels will be created by simple level blocks which can be shaped and textured.
 
 I predict that characters will be the a large outlay of time here, for the art creation, engine support and accoumpanying tool creation. I think this is a correct focus for a 3D platformer of this era, and certainly for the player character. The good news here is that I have already developed a character which I am going to use, I am sure it will undergo changes at it is far too hi-res to hit the correct look, but it gets be off the ground running.
 
@@ -76,11 +76,6 @@ Game is completely working, time to get some feedback from the public.
 
 2023-2024 - Game Release v1
 Game will be released probably initially on Windows and probably in one store. I will then slowly roll out release on other platforms and stores based on game reception.
-
-
-### References
-[1]Crash Bandicoot Dev Story
-[2]DOOM style level design
 
 
 

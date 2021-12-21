@@ -21,7 +21,7 @@ I will present my journey here in the style of problems and solutions, hopefully
 Using Bullet Physics[1] for my physics implementation gave great results. The player could run around with good looking momentum, kick down doors which would rebound slightly on impact and kick down walls of cubes which would dance around the screen. It was quite fun running around that little physics scene. Just one problem, physics like this doesn't belong in a PS1 style game.
 
 # Solution
-This was my first experience of Bullet Physics[1] and to be honest I got a little carried away. Before I knew it I had ended up deviating quite far from the type of game I set out to do. I didn't want to change the aim and come up with a new idea such as.
+This was my first experience of [Bullet Physics](https://pybullet.org/wordpress/) and to be honest I got a little carried away. Before I knew it I had ended up deviating quite far from the type of game I set out to do. I didn't want to change the aim and come up with a new idea such as.
 
 *'A modern take on the old PS1 style game!'*
 
@@ -38,11 +38,11 @@ A similar problem to above, however this time it was due to the character alread
 
 # Solution
 
-I needed a reference point to work to here, and using the power of the internet I found that the original Crash Bandicoot model was just 512 polygons[2].
+I needed a reference point to work to here, and using the power of the internet I found a [video game postmortem blog](https://videogamespostmortem.wordpress.com/category/jeux/crash-bandicoot/) that stated the original Crash Bandicoot model was just 512 polygons[2].
 
 I challenged myself to reduce my character to 512 polygons in Blender. This is much harder than you may think. in order to keep the character essence intact I had to deliberate over each polygon. The face was the most important part here, I needed to keep those expressive eyes, but everything else got brutally reduced in detail.
 
-Crash Bandicoot had to deal with serious hardware limitations which lead the devs to use a vertex animation style to achieve the cartoonish animation quality[3]. I was hoping to gain some development ground here by relying on the fact I am not running on a PS1, it just has to look PS1 like. So I had another consideration, there needed to be enough vertex info around the joints to not give terrible creasing.
+Crash Bandicoot had to deal with serious hardware limitations, in the [extended interview with Ars Technica](https://www.youtube.com/watch?v=pSHj5UKSylk), Co-creator Andy Gavin explains how such limitations lead the devs to use a vertex animation style to achieve the cartoonish animation quality. I was hoping to gain some development ground here by relying on the fact I am not running on a PS1, it just has to look PS1 like. So I had another consideration, there needed to be enough vertex info around the joints to not give terrible creasing.
 
 The last issue of texturing the character also took from Crash Bandicoot. Originally the model I used was textured using the standard approach of diffusemap, normalmap and materialmap. All these were thrown out and simple vertex colouring was used. This had a few wins:
 1. In my opinion it hit the desired aesthetic right on the nose.
@@ -58,8 +58,3 @@ Sort of counterintuitively, it takes effort to render badly these days. Textures
 # Solution
 ![Chaos the devil pre alpha low res](/assets/Images/Blog/Low-res-dev.jpg){:class="blog-img"}
 I was always aware this was going to be the case, and I am going to write a blog post solely on the techniques I used to achieve a similar look to PS1. Again, just as before, my aim was not to match the techniques of the PS1, which would obviously give me that PS1 style, but to still use more modern techniques to fake it. I am not trying to make my life too hard, this is a big project and I need to make up some ground in places.
-
-### References
-[1]Bullet Physics
-[2]Crash 512 polys
-[3]Crash dev story vid

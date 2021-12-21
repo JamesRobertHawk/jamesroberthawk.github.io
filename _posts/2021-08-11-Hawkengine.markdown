@@ -9,7 +9,7 @@ nextpost: "Chaos the devil announcement"
 
 I am not one for small tech demos, I don't find it too interesting to see a single rendered room with some fabric flying around. 
 
-When I have created some engine tech, I like to design a large project around it, which can take sometimes years. In that time I create a huge list of things I wish were different in the engine, things that started to break with scope, things that held me back or were overly complex. What's more, in that time tech moves on, new shiny stuff comes out, like everyone I want to play with shiny things, but while in a project I just put the idea on my engine wish list and stick to my current project, don't want to end up like Duke Nukem Forever[1]!
+When I have created some engine tech, I like to design a large project around it, which can take sometimes years. In that time I create a huge list of things I wish were different in the engine, things that started to break with scope, things that held me back or were overly complex. What's more, in that time tech moves on, new shiny stuff comes out, like everyone I want to play with shiny things, but while in a project I just put the idea on my engine wish list and stick to my current project, don't want to end up like [Duke Nukem Forever](https://www.youtube.com/watch?v=CASKDJNiLXA)!
 
 ## Great News!
 
@@ -44,9 +44,9 @@ On the whole I was happy with what I achieved with the previous generation of en
 3. XML out, files in. This sounds a bit odd but here is a quick explanation. Each component will now be represented by a script file just stored in a folder in dev mode. Release of the game will pack these files into pack files just as before.
 4. External libs will be used as much as possible for the implementation of interfaces. This will allow me to keep focus on engine design. Engine will now also support CMake, wanted to do this for ages but had to leave it on the wishlist.
 5. Resources will be optimised and loaded differently in deployment mode. Using external libs for data loading will lead to the data being in inefficient structures. This will probably be good for debugging and so will be used in a dev mode, but a deployment version of the assets will be created for the deployed game.
-6. Engine will be substantially different and so requires a full authoring rewrite, this time QT[2] will be used using an open source model. As the tool will be then in C++ it will be simple to add much more analytic functionality into it which was seriously lacking previously.
+6. Engine will be substantially different and so requires a full authoring rewrite, this time [QT](https://www.qt.io) will be used using an open source model. As the tool will be then in C++ it will be simple to add much more analytic functionality into it which was seriously lacking previously.
 7. The engine already lends itself to an async structure, this threaded approach will be central and built into the core of the engine, though I will also make it optional for fast debugging.
-8. The previous engine had a graphics implementation of OpenGL which worked really well, but with the focus on async I really would like to offer a Vulkan[3] path too. It is also something that I really want to play with in more than a demo situation.
+8. The previous engine had a graphics implementation of OpenGL which worked really well, but with the focus on async I really would like to offer a [Vulkan](https://www.vulkan.org/) path too. It is also something that I really want to play with in more than a demo situation.
 
 # What makes this engine different?
 This engine is very verbose, it doesn't even create a window for you unless you specify that a window manager component is required.
@@ -54,8 +54,3 @@ This engine is very verbose, it doesn't even create a window for you unless you 
 The engine doesn't have an editor UI built in. I will create a basic UI to go along with the engine that will be able to interface and embed the engine render output, however, this is not part of the engine project itself, the engine is standalone to keep a manageable focused project. The idea is that each project will probably create a bespoke editor solution designed for the specific purpose, rather than a general purpose frontend. Small projects for example may not even require a frontend, they may not even need to display anything in a window and require a vastly different style UI.
 
 The idea is to totally divorce between engine and tools, this engine is more designed for engine programmers specifically, and offers a clear demarcation between the worlds of engine and tools. 
-
-### References
-[1]Duke Forever Dev Story
-[2]QT
-[3]Vulkan
