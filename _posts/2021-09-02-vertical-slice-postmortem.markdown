@@ -4,6 +4,7 @@ title:  "Vertical slice postmortem for Chaos the devil."
 date:   2021-09-02 10:45:19 +0000
 categories: indiedev update
 image: /assets/Images/ChaosTheDevilCover.jpg
+nextpost: "Hawkengine development started"
 ---
 
 ![Chaos the devil vertical slice screens](/assets/Images/Blog/VerticalSlice.jpg){:class="blog-img"}
@@ -41,7 +42,7 @@ I needed a reference point to work to here, and using the power of the internet 
 
 I challenged myself to reduce my character to 512 polygons in Blender. This is much harder than you may think. in order to keep the character essence intact I had to deliberate over each polygon. The face was the most important part here, I needed to keep those expressive eyes, but everything else got brutally reduced in detail.
 
-Crash Bandicoot had to deal with serious hardware limitations which lead the devs to use a vertex animation style to achieve the cartoonish animation quality[3]. I am hoping to gain some development ground here by relying on the fact I am not running on a PS1, it just has to look PS1 like. So I had another consideration, there needed to be enough vertex info around the joints to not give terrible creasing.
+Crash Bandicoot had to deal with serious hardware limitations which lead the devs to use a vertex animation style to achieve the cartoonish animation quality[3]. I was hoping to gain some development ground here by relying on the fact I am not running on a PS1, it just has to look PS1 like. So I had another consideration, there needed to be enough vertex info around the joints to not give terrible creasing.
 
 The last issue of texturing the character also took from Crash Bandicoot. Originally the model I used was textured using the standard approach of diffusemap, normalmap and materialmap. All these were thrown out and simple vertex colouring was used. This had a few wins:
 1. In my opinion it hit the desired aesthetic right on the nose.

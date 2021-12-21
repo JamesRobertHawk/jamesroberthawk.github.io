@@ -4,6 +4,8 @@ title:  "Chaos the devil announcement"
 date:   2021-08-11 10:20:01 +0000
 categories: indiedev update
 image: /assets/Images/Blog/Ps1Platformers.jpg
+nextpost: "Vertical slice postmortem for Chaos the devil."
+
 ---
 
 # What is the game?
