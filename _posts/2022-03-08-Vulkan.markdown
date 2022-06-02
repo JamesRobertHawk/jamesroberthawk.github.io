@@ -1,0 +1,18 @@
+---
+layout: post
+title:  "Rendering in ps1 style in 2022 - part1"
+date:   2022-03-08 18:45:19 +0000
+categories: indiedev update
+image: /assets/Images/ChaosTheDevilCover.jpg
+nextpost: "Vertical slice postmortem for Chaos the devil."
+---
+
+Updated shaders ready for vulcan
+
+out as structs
+
+Images and textures separated
+
+Support for geometry shaders and tesselation shaders
+
+Creation of simple test scene
