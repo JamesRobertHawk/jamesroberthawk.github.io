@@ -156,4 +156,69 @@ The PS1 doesn't support sub-pixel precision when presenting to the frame buffer.
 |:--:|
 | *Jittering present in Tomb Raider 1 and Croc Legend of the Gobbos* |
 
+**Why doesn't this happen anymore?**
+
+We can now have subpixel vertex precision and anti-aliasing means even greater precision. This means that our polygons end up exactly where we expect them to be.
+
+**So how do we get it back?**
+
+Reduce the precision, which can be done in the vertex shader.
+
+```c++
+//position is post MVP translation of vertex
+vec4 to_low_precision(vec4 position,vec2 resolution)
+{
+	//Perform perspective divide
+	vec3 perspective_divide = position.xyz / vec3(position.w);
+	
+	//Convert to screenspace coordinates
+	vec2 screen_coords = (perspective_divide.xy + vec2(1.0,1.0)) * vec2(resolution.x,resolution.y) * 0.5;
+
+	//Truncate to integer
+	vec2 screen_coords_truncated = vec2(int(screen_coords.x),int(screen_coords.y));
+	
+	//Convert back to clip range -1 to 1
+	vec2 reconverted_xy = ((screen_coords_truncated * vec2(2,2)) / vec2(resolution.x,resolution.y)) - vec2(1,1);
+
+	//Construct return value
+	vec4 ps1_pos = vec4(reconverted_xy.x,reconverted_xy.y,perspective_divide.z,position.w);
+	ps1_pos.xyz = ps1_pos.xyz * vec3(position.w,position.w,position.w);
+
+	return ps1_pos;
+
+}
+```
+
+When applying this to a real game context, I noticed a side effect that I haven't seen discussed elsewhere.
+
+When using this method we are adding a slight offset to the vertex positions, so the shape of the polygon is slightly altered. This works great, as long as all the vertices are aligned exactly.
+
+However, if you have two shapes that are supposed to be together, but with vertices that are not aligned, seams can appear.
+
+| ![Image illustrating seams appearing between polygons which are not closed meshes when applying low vertex precision technique](/assets/Images/Blog/PS1Article/PS1_Low_Vertex_Precision_Causing_Splitting_Explanation.jpg){:class="blog-img"} |
+|:--:|
+| *Left, desired objects rendered together. Right, result of applying a slight rotation with low vertex position precision causing visible gap between objects A and B* |
+
+It is easiest to illustrate by example. Referring to the above image, on the left the two squares A and B are together as desired, on the right the two shapes have been rotated slightly and snapped to a grid. As you can see a gap appears between polygon A and B.
+
+The best way to fix this is to have fully closed meshes. No doubt this was the approach used by PS1 games, however I need to keep some flexibility in my authoring as I need to keep the complexity of the project as low as possible.
+
+Some fixes:
+
+1. Skybox background which contains similar colours to the main floor, wall and sky works quite well, but limits the level design too much. I want to be able to move between different floor colours during the level.
+2. Either pragmatically or manually add vertices to the geometry to ensure all vertices match up. This is a bit of a pain to implement.
+3. Not clearing the colour buffer between draws and accumulating the render. Holes in geometry now are filled with similar colour from previous render. This does quite a good job- most seams are hard to see. The problem is now that the scene cannot rely on clear colours.
+
+I went with the approach of trying to keep my geometry lined up as much as possible, but where this is not possible I fall back to the third approach to cover seams.
+
+| ![Seams created by low vertex precision causing sparkles](/assets/Images/Blog/PS1Article/PS1_Style_Low_Vertex_Precision_Seams_Sparkles.gif){:class="blog-img"} |
+|:--:|
+| *Left, untreated render showing black sparkles caused by seams appearing due to low vertex precision. Right, result of not clearing colour buffer between frames, making seams harder to see* |
+
+After tackling this issue, I noticed the same thing occurring in Tomb Raider 1, which also uses a block system for level building. So, not fixing the issue is also acceptable.
+
+| ![Tomb Raider 1 showing seams caused by low vertex precision](/assets/Images/Blog/PS1Article/Low_Vertex_Precision_Causing_Seams_In_Tomb_Raider_PS1.jpg){:class="blog-img"} |
+|:--:|
+| *Seam between level blocks visible in Tomb Raider 1 on PS1* |
+
 
