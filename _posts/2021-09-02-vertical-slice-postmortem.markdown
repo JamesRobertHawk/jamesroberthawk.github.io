@@ -51,6 +51,7 @@ The last issue of texturing the character also took from Crash Bandicoot. Origin
 
 # Problem
 **Graphics looking nice and crisp!**
+
 | ![Chaos the devil pre alpha hi res](/assets/Images/Blog/Hi-res-dev.jpg){:class="blog-img"} |
 |:--:|
 | *Graphics looking far too high resolution.* |
