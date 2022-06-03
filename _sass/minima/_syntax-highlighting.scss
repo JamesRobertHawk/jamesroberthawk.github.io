@@ -3,11 +3,12 @@
  */
 .highlight {
   background: #fff;
+  max-width: 100%;
   @extend %vertical-rhythm;
 
   .highlighter-rouge & {
     background: #eef;
-    max-width: 10px;
+    
   }
 
   .c     { color: #998; font-style: italic } // Comment
