@@ -119,4 +119,41 @@ I did encounter an issue I wasn't expecting. Triangles which had offscreen verti
 |:--:|
 | *Affine warping effect on polygons which contain offscreen vertices* |
 
+I also faced a problem that was much more anticipated. Affine textures are most noticeable when textures contain straight lines. This was an issue that the PS1 developers also had to contend with, so it looks like we are on the right track.
+
+I mitigated both these issues by adding geometry to the scene. I decided to add the extra polygons on load- this way I can more successfully adjust each scene section to work as well as possible. Tesselation could also be done in the shader, however, dynamically changing the tesselation level is noticeable due to the affine texture mapping.
+
+At this point I thought I was done, but then I found [another discussion](https://retrocomputing.stackexchange.com/questions/5019/why-do-3d-models-on-the-playstation-1-wobble-so-much) regarding how the PS1 handled clipping. Apparently, the PS1 clipped entire polygons and the developer had to deal with this. This explains why the strange affine warping didn't occur on the PS1- there are no polygons which contain vertices outside the view.
+
+Apparently, to deal with this, the developer would have to subdivide polygons to minimise the problem and ultimately force the remaining points into view.
+
+As geometry is added to the surface, the affine texture-mapping improves so there is a very visible snap occurring in the polygons which require clipping. This is a curious effect that I witnessed in Tomb Raider.
+
+To recreate this effect, I first tried to use the techniques required to subdivide triangles requiring clipping in the shader and then forcing all vertices into view, and it sort of worked.
+
+The problem with this approach is that some of my meshes are not closed, but next to one another as level blocks, so forcing vertices around made visible holes appear. The other issue was that this approach required substantial changes to my pipeline which I decided was not worth it.
+
+Instead I went with faking the effect, which is well within my brief.
+
+I passed two versions of vec2 UV to the fragment shader, one with perspective correction and the other without for affine. I also passed through a flag which indicated when all vertices of the polygon being rendered were within the view frustrum. If they were, I used the affine UV vector, and if not I used the perspective-corrected vector for UVs.
+
+So when the camera gets close to a polygon there is a visible jump in interpolation quality, which I think gives a good approximation.
+
+| ![Example of combining depth buffer and painter algorithm to achieve false tesselation snapping for polygons with offscreen vertices](/assets/Images/Blog/PS1Article/PS1_Style_False_Tesselation.gif){:class="blog-img"} |
+|:--:|
+| *Left, full affine texture-mapped render. Middle, blue highlights showing polygons which contain offscreen vertices. Right, result of combining perspective texture mapping for polygons with offscreen vertices and affine texture mapping for polygons which reside completely inside view frustrum.* |
+
+# Polygons
+## Jittering
+
+Triangles that make up the 3D shapes in a PS1 game, as well as popping [(see popping triangles section)](#popping-triangles) appear to dance all over place.
+
+**What's going on?**
+
+The PS1 doesn't support sub-pixel precision when presenting to the frame buffer. This means that when a vertex position is calculated, it snaps to the nearest pixel. The low frame resolutions compound this issue, so the snapping is quite noticeable.
+
+| ![Tomb Raider 1 and Croc showing vertex jitter](/assets/Images/Blog/PS1Article/PS1_Low_Vertex_Precision.gif){:class="blog-img"} |
+|:--:|
+| *Jittering present in Tomb Raider 1 and Croc Legend of the Gobbos* |
+
 
