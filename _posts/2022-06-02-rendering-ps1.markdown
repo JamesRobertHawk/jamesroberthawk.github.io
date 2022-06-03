@@ -64,4 +64,59 @@ It is often suggested that you could get textures to gain this look in the shade
 |:--:|
 | *Left: Original source texture. Right: Reduced colours. Centre: Effect of posterising which introduces undesirable colours* |
 
+The PS1 was capable of pushing 90k-180k textured polygons a second. However, it was able to push 360k when un-textured [see technical Spec](https://en.wikipedia.org/wiki/PlayStation_technical_specifications). This use of un-textured polygons was often used in conjunction with vertex colouring to increase efficiency. The Crash Bandicoot model was mostly un-textured and, with this in mind, I redesigned my main character to use vertex colouring rather than texture mapping. I also heavily reduced the polygon count to 512 triangles, which was tougher than imagined.
+
+| ![Chaos the devil hi vertex resolution vs low vertex resolution](/assets/Images/Blog/CharacterDetail.jpg){:class="blog-img"} |
+|:--:|
+| *Left, hi-poly character coloured with texture mapping. Right, low poly PS1-style character coloured using vertex colouring* |
+
+## Texture Rendering
+The textures of the PS1 are unmistakable- they are blocky, colourful, sparsely-pixelated and appear to have a personality themselves.
+
+| ![Tomb Raider 1 showing warped affine textures](/assets/Images/Blog/PS1Article/PS1_Affine_Texure_Mapping_Effect_In_Tomb_Raider.jpg){:class="blog-img"} |
+|:--:|
+| *Tomb Raider 1 on PS1 showing warped textures* |
+
+**What's going on?**
+
+Textures being applied to triangles (texture mapping) put in very simple terms work by storing a texture map coordinate for each vertex. These coordinates are then interpolated across the triangle and used to deform the image so that it appears to be on the triangle.
+
+We look up which is the closest pixel to the calculated lookup point and that is the colour chosen for that part of the triangle. Ultimately this is transformed to pixels.
+
+With this approach you would expect a few issues.
+
+1. When the texture is close to the viewer, the pixels can become very large.
+
+2. When the texture is far away, shimmering becomes an issue as the calculation tries to frantically decide which tiny pixel to display from the texture.
+
+3. If the texture is applied to a surface that is not perpendicular to the viewer, it gains a warping effect.
+
+**Why doesn't this happen anymore?**
+
+It does, but most example code found on the internet includes settings to mitigate or remove these issues.
+
+1. Textures have interpolation settings in OpenGL.  ```GL_NEAREST```  for example, has the effect of interpolating pixel colour where appropriate, which leads to smoothing of the texture.
+
+2. Likewise, shimmering is solved with a combination of this pixel interpolation and the addition of mipmaps. See ```GL_GENERATE_MIPMAP```
+
+3. The way the PS1 handles textures is quite basic- it simply projects the texture onto the polygon (affine). It does not take perspective into account. Perspective correction is now default for OpenGL, which solves the warping.
+
+**So how do we get it back?**
+
+1. To get that pixelated look back, we need to turn interpolation mode to ```GL_LINEAR``` in our textures.
+
+2. To gain shimmering textures, we can turn off mipmap generation.
+```glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);```
+
+3. To turn off perspective correction on textures, we can use noperspective in our shader. 
+```noperspective vec2 UV;```
+
+The largest impact was the change to affine interpolation of textures. This is most noticeable on faces which are near to the camera.
+
+I did encounter an issue I wasn't expecting. Triangles which had offscreen vertices didn't work well with affine texturing. This is probably due to the fact that the clip stage alters the geometry, breaking down faces so they fit onscreen. Affine texture mapping goes crazy when this happens. 
+
+| ![Affine warping effect on polygons with offscreen vertices](/assets/Images/Blog/PS1Article/PS1_Affine_Texture_Mapping_Warp_With_Offscreen_Vertices.gif){:class="blog-img"} |
+|:--:|
+| *Affine warping effect on polygons which contain offscreen vertices* |
+
 
