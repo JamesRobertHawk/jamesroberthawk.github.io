@@ -13,6 +13,10 @@ It is done, the game has reached vertical slice. The journey to this point was r
 
 I will present my journey here in the style of problems and solutions, hopefully it may be of use to somebody in a similar gamedev journey.
 
+| ![Affine warping effect on polygons with offscreen vertices](/assets/Images/Blog/PS1Article/PS1_Affine_Texture_Mapping_Warp_With_Offscreen_Vertices.gif){:class="blog-img"} |
+|:--:|
+| *Affine warping effect on polygons which contain offscreen vertices* |
+
 # Problem
 **The physics look great!**
 
