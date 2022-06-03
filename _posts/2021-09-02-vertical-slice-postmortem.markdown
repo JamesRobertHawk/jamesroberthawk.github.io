@@ -51,7 +51,9 @@ The last issue of texturing the character also took from Crash Bandicoot. Origin
 
 # Problem
 **Graphics looking nice and crisp!**
-![Chaos the devil pre alpha hi res](/assets/Images/Blog/Hi-res-dev.jpg){:class="blog-img"}
+| ![Chaos the devil pre alpha hi res](/assets/Images/Blog/Hi-res-dev.jpg){:class="blog-img"}|
+|:--:|
+| Graphics looking far too high resolution. |
 
 Sort of counterintuitively, it takes effort to render badly these days. Textures look interpolate pretty nicely, resolutions even without AA look pretty good, vertex position interpolation is great, depthbuffer does a great job of displaying only pixels visible to the player. This was not the case in PS1 days, so it all has to change.
 
