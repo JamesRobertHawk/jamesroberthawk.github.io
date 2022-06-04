@@ -149,14 +149,16 @@ blockquote {
 
 
 
+
+
+/**
+ * Code formatting
+ */
 pre
 {
   max-width: 10px;
 }
 
-/**
- * Code formatting
- 
 pre,
 code {
   @include relative-font-size(0.9375);
@@ -179,7 +181,6 @@ pre {
     padding-left: 0;
   }
 }
-*/
 
 
 
