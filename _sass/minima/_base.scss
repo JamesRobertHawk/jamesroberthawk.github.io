@@ -154,10 +154,6 @@ blockquote {
 /**
  * Code formatting
  */
-pre
-{
-  max-width: 10px;
-}
 
 pre,
 code {
@@ -228,6 +224,16 @@ pre {
       "contentfooter";
     grid-template-rows: 1fr 1fr 1fr 1fr;  
     grid-template-columns: 1fr;
+ }
+
+ //Added as pre and auto scroll bars doesn't work with flexible layout
+ pre
+ {
+   white-space: pre-wrap;       /* Since CSS 2.1 */
+   white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+   white-space: -pre-wrap;      /* Opera 4-6 */
+   white-space: -o-pre-wrap;    /* Opera 7 */
+   word-wrap: break-word;       /* Internet Explorer 5.5+ */
  }
 }
 

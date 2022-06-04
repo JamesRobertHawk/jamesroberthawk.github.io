@@ -190,3 +190,5 @@ vec4 to_low_precision(vec4 position,vec2 resolution)
 ```
 
 When applying this to a real game context, I noticed a side effect that I haven't seen discussed elsewhere.
+
+When using this method we are adding a slight offset to the vertex positions, so the shape of the polygon is 
