@@ -172,17 +172,29 @@ vec4 to_low_precision(vec4 position,vec2 resolution)
 	vec3 perspective_divide = position.xyz / vec3(position.w);
 	
 	//Convert to screenspace coordinates
-	vec2 screen_coords = (perspective_divide.xy + vec2(1.0,1.0)) * vec2(resolution.x,resolution.y) * 0.5;
+	vec2 screen_coords = (perspective_divide.xy 
+							+ vec2(1.0,1.0)) 
+							* vec2(resolution.x,resolution.y) 
+							* 0.5;
 
 	//Truncate to integer
-	vec2 screen_coords_truncated = vec2(int(screen_coords.x),int(screen_coords.y));
+	vec2 screen_coords_truncated = vec2(int(screen_coords.x),
+										int(screen_coords.y));
 	
 	//Convert back to clip range -1 to 1
-	vec2 reconverted_xy = ((screen_coords_truncated * vec2(2,2)) / vec2(resolution.x,resolution.y)) - vec2(1,1);
+	vec2 reconverted_xy = ((screen_coords_truncated * vec2(2,2))
+							 / vec2(resolution.x,resolution.y)) 
+							- vec2(1,1);
 
 	//Construct return value
-	vec4 ps1_pos = vec4(reconverted_xy.x,reconverted_xy.y,perspective_divide.z,position.w);
-	ps1_pos.xyz = ps1_pos.xyz * vec3(position.w,position.w,position.w);
+	vec4 ps1_pos = vec4(reconverted_xy.x,
+						reconverted_xy.y,
+						perspective_divide.z,
+						position.w);
+
+	ps1_pos.xyz = ps1_pos.xyz * vec3(	position.w,
+										position.w,
+										position.w);
 
 	return ps1_pos;
 
@@ -473,7 +485,7 @@ vec4 posterize(vec4 colour)
 	float num_colors = 32.0f;
 
 	vec3 colour_out = colour.rgb;
-	colour_out = pow(colour_out, vec3(gamma, gamma, gamma));
+	colour_out = pow(colour_out, vec3(gamma));
 	colour_out = colour_out * num_colors;
 	colour_out = floor(colour_out);
 	colour_out = colour_out / num_colors;
@@ -486,96 +498,9 @@ vec4 posterize(vec4 colour)
 ```
 This gives us colour banding that we may want to try and cover up with dithering. The PS1 performed the dithering itself and I can't find much info on it, so I am just going to try and make something that looks similar.
 
-Dithering isn't too complicated to get going. I implemented an ordered dithering with a 8x8 bayermatrix. If you want to understand more about what is going on, check out the [entry on Wikipedia](https://en.wikipedia.org/wiki/Ordered_dithering).
+Dithering isn't too complicated to get going. I implemented an ordered dithering with a 8x8 bayermatrix by following the [entry on Wikipedia](https://en.wikipedia.org/wiki/Ordered_dithering).
 
-
-```c++
-#version 300 es
-
-//Set Precision
-precision mediump float;
-
-//Standard Input
-uniform sampler2D diffuse_texture;
-
-uniform vec2 screen_dimensions;
-
-//Output
-out vec4 FragColor;
-
-//Inputs from the vertex shader
-in vec2 UV;
-
-//Below is non-standard addon used in my engine to add in posterization code
-#include "Posterization.glslh"
-
-struct DitherRow
-{
-    float row[8];
-};
-
-float apply_bayer_matrix(float col)
-{
-    //Applies 8x8 bayer matrix
-    vec2 xy = UV * screen_dimensions;
-    
-    int x = int(mod(xy.x, 8.0));
-    
-    int y = int(mod(xy.y, 8.0));
-
-	//Info on this https://en.wikipedia.org/wiki/Ordered_dithering
-    DitherRow bayer_matrix[8] = DitherRow[8](    DitherRow(float[8](0.0f,32.0f,8.0f,40.0f,2.0f,34.0f,10.0f,42.0f)),
-                                                DitherRow(float[8](48.0f,16.0f,56.0f,24.0f,50.0f,18.0f,58.0f,26.0f)),
-                                                DitherRow(float[8](12.0f,44.0f,4.0f,36.0f,14.0f,46.0f,6.0f,38.0f)),
-                                                DitherRow(float[8](60.0f,28.0f,52.0f,20.0f,62.0f,30.0f,54.0f,22.0f)),
-                                                DitherRow(float[8](3.0f,35.0f,11.0f,43.0f,1.0f,33.0f,9.0f,41.0f)),
-                                                DitherRow(float[8](51.0f,19.0f,59.0f,27.0f,49.0f,17.0f,57.0f,25.0f)),
-                                                DitherRow(float[8](15.0f,47.0f,7.0f,39.0f,13.0f,45.0f,5.0f,37.0f)),
-                                                DitherRow(float[8](63.0f,31.0f,55.0f,23.0f,61.0f,29.0f,53.0f,21.0f)));
-
-    float bayer_limit = 0.0;
-
-    if(x < 8)
-    {
-        bayer_limit = (bayer_matrix[y].row[x]+1.0)/64.0;
-    }
-
-    //On or Off
-    if(col < bayer_limit)
-    {
-        return 0.0;
-    }
-    else
-    {
-        return 1.0;
-    }
-
-}
-
-void main()
-{
-    vec4 colour_out = texture(diffuse_texture, UV);
-
-	//Posterizes to 32 levels to achieve colour banding
-    colour_out = posterize(colour_out);
-
-	//Magic numbers here are from https://en.wikipedia.org/wiki/Grayscale
-    float grayscale =  0.299 * colour_out.r + 0.587 * colour_out.g + 0.114 * colour_out.b;
-
-    float bayer_matrix_result = apply_bayer_matrix(grayscale);
-
-    vec4 dither_out = vec4(    colour_out.r * bayer_matrix_result,
-                                    colour_out.g * bayer_matrix_result,
-                                    colour_out.b * bayer_matrix_result,
-                                    1.0);
-
-	//Magic number interpolation added to manually control final impact of dithering
-    FragColor = mix(colour_out,dither_out,0.05);
-}
-
-```
-
-I tweaked the numbers a bit to favour a desirable look over a true look so that it isn't too annoying and adds a bit of flavour to the render.
+I tweaked the numbers a bit to favour a desirable look so that it isn't too annoying and adds a bit of flavour to the render.
 
 | ![Comparison zoomed shot comparing source, banding and dithered renders like the PS1](/assets/Images/Blog/PS1Article/PS1_Style_Dithering_Example_OpenGL.jpg){:class="blog-img"} |
 |:--:|
