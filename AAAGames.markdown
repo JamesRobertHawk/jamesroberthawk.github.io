@@ -4,10 +4,10 @@ title: AAAGames
 permalink: /AAAGames/
 image: /assets/Images/CoverAAA.jpg
 contenttitle1: "EVE Online"
-content1: I am currently at Engine Programmer at CCP Games, working on the MMORPG EVE Online.
+content1: Currently an Engine Programmer at CCP Games, working on the MMORPG EVE Online.
 contentvideo1: https://www.youtube.com/embed/sPFII3ozSHI
 contenttitle2: "Total War Rome II"
-content2: I was a graphcs programmer at The Creative Assembly.
+content2: Graphcs programmer at The Creative Assembly during early development of RomeII.
 contentvideo2: https://www.youtube.com/embed/97Y8-QFJbWo
 ---
 
