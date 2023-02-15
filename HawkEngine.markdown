@@ -1,17 +1,14 @@
 ---
 layout: pagewcolumns
-title: IndieGameEngine
-permalink: /IndieGameEngine/
+title: HawkEngine
+permalink: /HawkEngine/
 image: /assets/Images/EngineCover.jpg
-contenttitle1: "Modular Design"
-content1: TheIndieGameEngine is designed to be flexible. The core provides a solid starting point to create graphics software, promoting good practices and speeding up innovation.
-contentimage1: /assets/Images/Modular.jpg
-contenttitle2: "Full Customizable Pipeline"
-content2: Experimentation is central to the design of the engine. The render pipeline in TheIndieGameEngine is completely customizable from an available front end, empowering the developer with the flexibility to fully explore his ideas and realise his creativity. 
+contenttitle1: "Distributed design"
+content1: Micro-service approach to game development, each game component is treated as a separate micro-system. Each service can communicate with other services, in a process, locally across processes or across network.
+contentimage1: /assets/Images/HawkEngineStructure.jpg
+contenttitle2: "Interface System"
+content2: Written in c++, scripting with LUA. Current engine contains implementations for OpenGL, BulletPhysics, OpenAL, FreeType, image and audio file loading and a custom weighted mesh solution.
 contentvideo2: https://www.youtube.com/embed/rrO0J_agsCE
 ---
 
-*TheIndieGameEngine* is an engine designed entirely from the ground up, able to run natively across all platforms. The engine aims to encourage innovation in the field of graphical software and games. 
-
-
-I am currently working on the next iteration of this engine named *HawkEngine* and hope to release in late 2022.
+HawkEngine is being designed along side my game project ChaosTheDevil. It is designed to offer a flexible system which can scale as a project grows. HawkEngine contains interfaces aimed at game development, however the core of the engine can be used for any micro-service style application.

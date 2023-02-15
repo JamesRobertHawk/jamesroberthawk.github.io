@@ -2,10 +2,10 @@
 layout: pagewcolumns
 title: ChaosTheDevil
 permalink: /ChaosTheDevil/
-image: /assets/Images/ChaosScreen2.jpg
+image: /assets/Images/ChaosTheDevilCover.jpg
 contenttitle1: "Retro 3D Platformer"
 content1:  Jump, smash and grab your way through 31 twisting levels. Comic design, fun action, and old school design at it's best.
-contentimage1: /assets/Images/Modular.jpg
+contentimage1: /assets/Images/ChaosScreen2.jpg
 contenttitle2: "Modern Approach"
 content2: Relive the fun of stripped back retro style in this homage to the greats. Classic controls, choice of low or high resolution graphics and all original content. Chaos awaits!
 contentvideo2: https://www.youtube.com/embed/Fwwv9GifkFM
