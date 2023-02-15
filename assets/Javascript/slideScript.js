@@ -20,7 +20,7 @@ function carousel() {
 
 
 function onSlide1Click(){
-	window.location.href = "IndieGameEngine/";
+	window.location.href = "HawkEngine/";
 }
 
 function onSlide2Click(){
