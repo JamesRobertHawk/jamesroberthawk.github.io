@@ -24,7 +24,7 @@ function onSlide1Click(){
 }
 
 function onSlide2Click(){
-	window.location.href = "IndieGames/";
+	window.location.href = "ChaosTheDevil/";
 }
 
 function onSlide3Click(){
