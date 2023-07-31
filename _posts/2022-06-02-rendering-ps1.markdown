@@ -4,7 +4,7 @@ title:  "Rendering in Playstation 1 style in OpenGL"
 date:   2022-06-02 18:45:19 +0000
 categories: indiedev update
 image: /assets/Images/PlaystationRenderingArticleCover.jpg
-nextpost: "Vertical slice postmortem for Chaos the devil."
+nextpost: "Tips for optimising Lua"
 ---
 
 This article outlines the techniques I used to emulate a PS1-style game in OpenGL. I use my own engine for this article, but if you are using one of the popular game engines you will still find the information useful.
