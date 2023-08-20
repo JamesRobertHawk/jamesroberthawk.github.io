@@ -9,21 +9,28 @@ nextpost: "Hawkengine development started"
 ---
 
 # Introduction
-For my current project I took the decision to switch my scripting engine to us lua. 
+I took the decision to switch my scripting engine to lua from python. This was due to a few reasons outside the scope of this article, however the biggest draw for me was the simplicity of the lua integration.
 
-Prior to this project I had no exposure to lua. While making the engine I didn't spend much time learning best practices for optimisation.
+As I didn't know the full requirements for the scripting engine initially, I just studied enough to replace my scripting engine.
 
-I decided to document the main changes I made to increase performance as it may be useful for others.
+I planned to revisit the implementation once a vertical slice had been reached to analyse to see if optimisations could be achieved.
+
+I decided to document the main changes I made to increase performance. 
+
+I hope that it may be useful for others.
 
 # Contents
-1. [Globals vs Locals](#motivation)
-2. [Optimising Globals](#textures)
-3. [Conclusion](#polygons)
+1. [Globals vs Locals](#globals-vs-Locals)
+2. [Optimising Globals](#optimising-globals)
+3. [Conclusion](#conclusion)
 
 ## Globals vs Locals
 In lua, variables default to global.
 Globals are stored in an indexed table.
 When a variable is referenced, a lookup is done in the global table for the value.
+
+So
+
 If you have loads of globals, this is going to be slower.
 
 e.g.
@@ -48,11 +55,13 @@ int main()
 
 But there's more...
 
-When implementing the LUA scripting I read that garbage collection exists much like the Python implantation I was replacing at the time. So I didn't give this much thought.
+When implementing the LUA scripting, I read that garbage collection exists much like the Python implementation I was replacing at the time. I didn't give this much thought then as my full spec was not formed, but kept it in mind.
+
+I now know.
 
 Lua states that it will garbage collect when an item is no longer referenced anywhere.
 
-So when will x and y be collected in the below example?
+So referring to the previous example when will x and y be collected?
 ```Lua
 function example
     x = 5
@@ -82,16 +91,20 @@ end
 ```
 The above code does not cause multiple lookups from the globals table.
 
-Lua prioritises the local variables in a scope. So usage of x also refer here to the local we declared.
+Lua prioritises the local variables in a scope. So usage of x refer here to the local we declared.
 
 When out of scope the local variables automatically qualify for garbage collection.
 
-These variables no longer leak across methods therefore removing odd bugs arising.
+These variables no longer leak across methods, therefore odd bugs due to leaking variables across methods are avoided.
 
-To clean up after components in c++ side I had to add to the component destruction code to set the globals that related to that component to nil. This allows for garbage collection.
+To clean up after components in c++ side I had to add to the component destruction code. I set the globals that related to that component to nil on destruction making them qualify for garbage collection.
+
+| ![Affine warping effect on polygons with offscreen vertices](/assets/Images/Blog/LuaArticle/LuaMemoryTracking.jpg){:class="blog-img"} |
+|:--:|
+| *In editor memory tracking of lua showing data being correctly garbage collected during level transitions.* |
 
 ## Optimising Globals
-Sometimes however we do want globals.
+Sometimes, however, we do want globals.
 
 In my engine any component can reference any other component through lua directly.
 
@@ -104,19 +117,19 @@ Each component can have functions and properties e.g.
 block_img.draw()
 block_img.isRenderable:value()
 ```
-One of the engines guiding principles is to break down components as far as possible, no one component will ever do two tasks. Therefore there are a lot of components.
+One of the engines guiding principles is to break down components as far as possible, no one component will ever do two tasks. Therefore, there are a lot of components.
 
-Adding a global inspector to my metrics to measure globals after loading level1 yielded a number greater that 4000 entries.
+Adding a global inspector to my metrics to measure globals yielded a number greater that 4000 entries after loading level1.
 
-This meant, each time a component was referenced in the LUA code, the lookup has to look through 4000 odd entries.
+This meant, each time a component was referenced in the LUA code, the lookup could look through 4000 entries.
 
-Compounding the issue even custom types can be found in the global table. e.g. in the engine there is a type called HVec3, a vector with size 3.
+Compounding the issue, even custom types can be found in the global table. e.g. in the engine there is a type called HVec3, a vector with size 3.
 Typical usage:
 ```Lua
 local hello = HVec.new()
 ```
 and the c++ counterpart to see the problem
-```Lua
+```c++
 local hello = globals["HVec"].members["new"]
 //And remember that globals has over 4000 members in it!
 ```
@@ -134,39 +147,58 @@ would expand to
 someparent_texture.
 ```
 
-for scripts residing inside the someparent directory.
+for scripts residing inside the 'someparent' directory.
 
 There are a few problems with this.
-1. It is a global lookup each time the script is run and as we saw the globals base table can be large.
+1. It is a global lookup each time the script is run and as we saw, the globals base table can be large.
 2. Having a preprocessor stops you being able to ship with compiled LUA scripts.
 
 Hang on, compiled? Isn't this interpreted?
 
-Nope. There is a compilation step and you can ship with this, it was news to me, but as soon as I heard about it, I wanted it. Mostly just so I wasn't shipping with plain text scripts, but hey if my load speed increased too, well then that's great.
+Nope. There is a compilation step and you can ship with this. As soon as I heard about it, I wanted it. Mostly just so I wasn't shipping with plain text scripts, but hey if my load speed increased too, well then that's great.
 
 ## The fix
 I made a base table for components called, yep 'components' which all components would now reside.
 
-So when using Vec3 or print or something the lookup wouldn't be slowed by thousands of entries for components.
+So when using Vec3 or print or something, the lookup wouldn't be slowed by thousands of entries for components.
 
 It does however mean that referencing a component is now slower.
 First there is a lookup in the global table for 'components' then there is a subsequent lookup in that table for the component you desire.
 
 To deal with this I relied on the fact that in the engine it is a bad pattern to reference another component from a vastly different block structure. In fact the occurrence of this happening is very rare, only a handful.
 
-What is preferred is interactions between components in the same block. Interactions between components in a parent block, and interactions between components in a child block. interactions between methods and parameters of the same component is probably the most common of all.
+What is preferred are: 
+1. interactions between components in the same block.
+2. Interactions between components in a parent block,
+3. and interactions between components in a child block. 
 
-To speed all this up all these lookups were front loaded. When a component is constructed in c++ a table is created to represent the component. Subsequent tables are created with references to all components in the block, a reference to the parent block if present and if the component itself is a block a reference to all the children it has. Then for usability these values are passed through to the entry functions of the script eg.
+interactions between methods and parameters of the same component is probably the most common of all.
 
+To speed all this up, all these lookups were front loaded. 
+
+When a component is constructed in c++, a table is created to represent the component. Subsequent tables are created with references to all components in the block, a reference to the parent block if present, and if the component itself is a block, a reference to all the children it has. Then for usability these values are passed through to the entry functions of the script eg.
+
+```Lua
 function component.init(component,block,parent)
+```
 
-component here is also set before calling the script so it will reference whatever component is currently set. This removed the need for the preprocessor pass which in itself is an efficiency boost to load times, and meant I could now compile the scripts giving even more gains.
+component here is also set before calling the script so it will reference whatever component is currently active. 
+
+This removed the need for the preprocessor pass which in itself is an efficiency boost to load times, and meant I could now compile the scripts giving even more gains.
 
 Overall the change took 3 weeks of part-time work. I kept both script styles functional during the transition which was absolutely vital due to the size of the changes required.
 
 # Conclusion
-The speed boost to the game was huge I was starting to hit 1000fps during a level1.
+Spending the time to go deep on a system that was completely functional to begin with paid off.
 
-Memory footprint now clearly rose and fell when levels were loaded and unloaded.
+The uneasy feeling I had of not fully understanding a technology I was using was vanquished.
 
-An uneasy feeling I had of not fully understanding a technology I was using was gone.
+The speed boost to the game was huge, it went from around 200fps to near 1000. Keep in mind the title I am running is a retro style running on a gaming laptop.
+
+Memory footprint now clearly rise and fall when levels were loaded and unloaded.
+
+The hardest part of the change is now my game scripting structure is completely different and even though I was the one who re-engineered it, I was really used to the old style. The new style is going to take some time to get used to.
+
+
+
+
