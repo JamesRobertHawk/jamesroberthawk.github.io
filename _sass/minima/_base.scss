@@ -9,7 +9,6 @@ dl, dd, ol, ul, figure, div, span {
 }
 
 
-
 /**
  * Basic styling
  */
@@ -408,6 +407,9 @@ pre {
   grid-area: contentfooter;      
 }
 
+#mailinglistSub {
+  text-align: center;
+}
 
 
 
@@ -469,4 +471,8 @@ table {
   td {
     border: 1px solid $grey-color-light;
   }
+}
+
+hr {
+  border-color:$grey-color-light;
 }

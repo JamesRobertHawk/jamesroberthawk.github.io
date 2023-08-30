@@ -6,15 +6,21 @@ image: /assets/Images/VoxelCityCover.jpg
 <!-- This loops through the paginated posts -->
 {% for post in paginator.posts %}
   <div class="blogpage-entry">
-    <img src="{{- post.image | relative_url -}}" alt="" class="blog-image">
-    <h1><a href="{{ post.url }}">{{ post.title }}</a></h1>
-    <p class="author">
-      <span class="date">{{ post.date }}</span>
-    </p>
+    <a href="{{ post.url }}">
+      <div class="blogpage-entry-title">
+        <img src="{{- post.image | relative_url -}}" alt="" class="blog-image">
+        <h1>{{ post.title }}</h1>
+        <p class="author">
+          <span class="date">{{ post.date }}</span>
+        </p>
+        <br>
+      </div>
+    </a>
     <div class="blog-extract-content">
       {{ post.content | strip_html | truncatewords: 50 }}
     </div>
   </div>
+  <hr>
 {% endfor %}
 
 <!-- Pagination links -->

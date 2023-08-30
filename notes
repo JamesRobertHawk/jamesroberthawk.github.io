@@ -1,0 +1,4 @@
+Had to make some alterations to gem file to remove ref to github pages
+had to run bundle install
+has to run bundle add webrick
+then bundle exec jekyll serve

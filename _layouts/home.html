@@ -4,23 +4,39 @@ layout: default
 
 <div class="home">
 
+  
+
   {{ content }}
 
-  <h1>Featured Blog Post</h1>
-  {% for post in site.posts %}
 
-    {% if post.title == page.featuredpost %}
-      <div class="blogpage-entry">
-        <img src="{{- post.image | relative_url -}}" alt="" class="blog-image">
-        <h1><a href="{{ post.url }}">{{ post.title }}</a></h1>
-        <p class="author">
-          <span class="date">{{ post.date }}</span>
-        </p>
-        <div class="blog-extract-content">
-          {{ post.content | strip_html | truncatewords: 50 }}
+  <div id="mailinglistSub">
+    <iframe src="https://backend.hawkjames.com/subscribeToMailinglist" title="Join mailinglist" width="500" height="135" frameBorder="0" ></iframe>  
+  </div>
+  
+  
+  {% if page.featuredpost %}
+  <hr>
+    <h1>Featured Blog Post</h1>
+    {% for post in site.posts %}
+      {% if post.title == page.featuredpost %}
+        <div class="blogpage-entry">
+          <img src="{{- post.image | relative_url -}}" alt="" class="blog-image">
+          <h1><a href="{{ post.url }}">{{ post.title }}</a></h1>
+          <p class="author">
+            <span class="date">{{ post.date }}</span>
+          </p>
+          <div class="blog-extract-content">
+            {{ post.content | strip_html | truncatewords: 50 }}
+          </div>
         </div>
-      </div>
-    {% endif %}
-  {% endfor %}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
+
+
+
+  
+  
 
 </div>

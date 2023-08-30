@@ -1,4 +1,1321 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2021-12-21T15:18:15+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">James Hawk</title><subtitle>Engine Programmer at CCP Games, working on EVE Online. Indie developer working on HawkEngine and PS1 style 3D platformer. Unity 3D asset creator. Interesting guy.</subtitle><entry><title type="html">Vertical slice postmortem for Chaos the devil.</title><link href="http://localhost:4000/indiedev/update/2021/09/02/vertical-slice-postmortem.html" rel="alternate" type="text/html" title="Vertical slice postmortem for Chaos the devil." /><published>2021-09-02T10:45:19+00:00</published><updated>2021-09-02T10:45:19+00:00</updated><id>http://localhost:4000/indiedev/update/2021/09/02/vertical-slice-postmortem</id><content type="html" xml:base="http://localhost:4000/indiedev/update/2021/09/02/vertical-slice-postmortem.html">&lt;p&gt;&lt;img src=&quot;/assets/Images/Blog/VerticalSlice.jpg&quot; alt=&quot;Chaos the devil vertical slice screens&quot; class=&quot;blog-img&quot; /&gt;&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-08-30T09:21:41+01:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">James Hawk</title><subtitle>Engine Programmer at CCP Games, working on EVE Online. Indie developer working on HawkEngine and PS1 style 3D platformer. Unity 3D asset creator. Interesting guy.</subtitle><entry><title type="html">Tips for optimising Lua</title><link href="http://localhost:4000/indiedev/update/2023/06/08/OptimisingLua.html" rel="alternate" type="text/html" title="Tips for optimising Lua" /><published>2023-06-08T11:20:01+01:00</published><updated>2023-06-08T11:20:01+01:00</updated><id>http://localhost:4000/indiedev/update/2023/06/08/OptimisingLua</id><content type="html" xml:base="http://localhost:4000/indiedev/update/2023/06/08/OptimisingLua.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;I took the decision to switch my scripting engine to lua from python. This was due to a few reasons outside the scope of this article, however the biggest draw for me was the simplicity of the lua integration.&lt;/p&gt;
+
+&lt;p&gt;As I didn’t know the full requirements for the scripting engine initially, I just studied enough to replace my scripting engine.&lt;/p&gt;
+
+&lt;p&gt;I planned to revisit the implementation once a vertical slice had been reached to analyse to see if optimisations could be achieved.&lt;/p&gt;
+
+&lt;p&gt;I decided to document the main changes I made to increase performance.&lt;/p&gt;
+
+&lt;p&gt;I hope that it may be useful for others.&lt;/p&gt;
+
+&lt;h1 id=&quot;contents&quot;&gt;Contents&lt;/h1&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;#globals-vs-Locals&quot;&gt;Globals vs Locals&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#optimising-globals&quot;&gt;Optimising Globals&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#conclusion&quot;&gt;Conclusion&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;globals-vs-locals&quot;&gt;Globals vs Locals&lt;/h2&gt;
+&lt;p&gt;In lua, variables default to global.
+Globals are stored in an indexed table.
+When a variable is referenced, a lookup is done in the global table for the value.&lt;/p&gt;
+
+&lt;p&gt;So&lt;/p&gt;
+
+&lt;p&gt;If you have loads of globals, this is going to be slower.&lt;/p&gt;
+
+&lt;p&gt;e.g.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-Lua&quot;&gt;function example
+    x = 5
+    y = x + x
+end
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;here x is set as a global to 5
+y is then set as x + x. This incorporates two individual lookups from the global table of x.
+Converting this to c++ makes it more obvious.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-C++&quot;&gt;int main()
+{
+    std::map&amp;lt;std::string, int&amp;gt; globals;
+    globals[&quot;x&quot;] = 5;
+    globals[&quot;y&quot;] = globals[&quot;x&quot;] + globals[&quot;x&quot;];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;But there’s more…&lt;/p&gt;
+
+&lt;p&gt;When implementing the LUA scripting, I read that garbage collection exists much like the Python implementation I was replacing at the time. I didn’t give this much thought then as my full spec was not formed, but kept it in mind.&lt;/p&gt;
+
+&lt;p&gt;I now know.&lt;/p&gt;
+
+&lt;p&gt;Lua states that it will garbage collect when an item is no longer referenced anywhere.&lt;/p&gt;
+
+&lt;p&gt;So referring to the previous example when will x and y be collected?&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-Lua&quot;&gt;function example
+    x = 5
+    y = x + x
+end
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Perhaps never, is the answer. They are referenced in the globals table so wont be collected.&lt;/p&gt;
+
+&lt;p&gt;What’s more you may also get some unexpected results of variables leaking across methods.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-Lua&quot;&gt;function example2
+    y = x + x
+end
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Calling example2 after example will run no problem, x exists from before. But, call example2 before example and you get an error for referencing a nil value x.&lt;/p&gt;
+
+&lt;p&gt;I added LUA memory tracking to my memory metrics and confirmed that my lua memory usage just went up and up as the game progressed through levels.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-fix&quot;&gt;The fix&lt;/h2&gt;
+&lt;p&gt;Explicitly state that variables are local.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Lua&quot;&gt;function example3
+    local x = 5
+    local y = x + x
+end
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The above code does not cause multiple lookups from the globals table.&lt;/p&gt;
+
+&lt;p&gt;Lua prioritises the local variables in a scope. So usage of x refer here to the local we declared.&lt;/p&gt;
+
+&lt;p&gt;When out of scope the local variables automatically qualify for garbage collection.&lt;/p&gt;
+
+&lt;p&gt;These variables no longer leak across methods, therefore odd bugs due to leaking variables across methods are avoided.&lt;/p&gt;
+
+&lt;p&gt;To clean up after components in c++ side I had to add to the component destruction code. I set the globals that related to that component to nil on destruction making them qualify for garbage collection.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/LuaArticle/LuaMemoryTracking.jpg&quot; alt=&quot;Affine warping effect on polygons with offscreen vertices&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;In editor memory tracking of lua showing data being correctly garbage collected during level transitions.&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&quot;optimising-globals&quot;&gt;Optimising Globals&lt;/h2&gt;
+&lt;p&gt;Sometimes, however, we do want globals.&lt;/p&gt;
+
+&lt;p&gt;In my engine any component can reference any other component through lua directly.&lt;/p&gt;
+
+&lt;p&gt;There is a flat hierarchy for simplicity. e.g. referencing an image called ‘img’ inside a component block called ‘block’ is as simple as&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-Lua&quot;&gt;block_img
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Each component can have functions and properties e.g.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-Lua&quot;&gt;block_img.draw()
+block_img.isRenderable:value()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;One of the engines guiding principles is to break down components as far as possible, no one component will ever do two tasks. Therefore, there are a lot of components.&lt;/p&gt;
+
+&lt;p&gt;Adding a global inspector to my metrics to measure globals yielded a number greater that 4000 entries after loading level1.&lt;/p&gt;
+
+&lt;p&gt;This meant, each time a component was referenced in the LUA code, the lookup could look through 4000 entries.&lt;/p&gt;
+
+&lt;p&gt;Compounding the issue, even custom types can be found in the global table. e.g. in the engine there is a type called HVec3, a vector with size 3.
+Typical usage:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-Lua&quot;&gt;local hello = HVec.new()
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and the c++ counterpart to see the problem&lt;/p&gt;
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;local&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hello&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;globals&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;HVec&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;members&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;new&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;//And remember that globals has over 4000 members in it!&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;I relied on a preprocessing of the LUA scripts to generate variable names from helper macros. instead of having to write the entire name of a component. 
+e.g.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Lua&quot;&gt;[BLOCK]texture
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;would expand to&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Lua&quot;&gt;someparent_texture.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;for scripts residing inside the ‘someparent’ directory.&lt;/p&gt;
+
+&lt;p&gt;There are a few problems with this.&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;It is a global lookup each time the script is run and as we saw, the globals base table can be large.&lt;/li&gt;
+  &lt;li&gt;Having a preprocessor stops you being able to ship with compiled LUA scripts.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Hang on, compiled? Isn’t this interpreted?&lt;/p&gt;
+
+&lt;p&gt;Nope. There is a compilation step and you can ship with this. As soon as I heard about it, I wanted it. Mostly just so I wasn’t shipping with plain text scripts, but hey if my load speed increased too, well then that’s great.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-fix-1&quot;&gt;The fix&lt;/h2&gt;
+&lt;p&gt;I made a base table for components called, yep ‘components’ which all components would now reside.&lt;/p&gt;
+
+&lt;p&gt;So when using Vec3 or print or something, the lookup wouldn’t be slowed by thousands of entries for components.&lt;/p&gt;
+
+&lt;p&gt;It does however mean that referencing a component is now slower.
+First there is a lookup in the global table for ‘components’ then there is a subsequent lookup in that table for the component you desire.&lt;/p&gt;
+
+&lt;p&gt;To deal with this I relied on the fact that in the engine it is a bad pattern to reference another component from a vastly different block structure. In fact the occurrence of this happening is very rare, only a handful.&lt;/p&gt;
+
+&lt;p&gt;What is preferred are:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;interactions between components in the same block.&lt;/li&gt;
+  &lt;li&gt;Interactions between components in a parent block,&lt;/li&gt;
+  &lt;li&gt;and interactions between components in a child block.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;interactions between methods and parameters of the same component is probably the most common of all.&lt;/p&gt;
+
+&lt;p&gt;To speed all this up, all these lookups were front loaded.&lt;/p&gt;
+
+&lt;p&gt;When a component is constructed in c++, a table is created to represent the component. Subsequent tables are created with references to all components in the block, a reference to the parent block if present, and if the component itself is a block, a reference to all the children it has. Then for usability these values are passed through to the entry functions of the script eg.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-Lua&quot;&gt;function component.init(component,block,parent)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;component here is also set before calling the script so it will reference whatever component is currently active.&lt;/p&gt;
+
+&lt;p&gt;This removed the need for the preprocessor pass which in itself is an efficiency boost to load times, and meant I could now compile the scripts giving even more gains.&lt;/p&gt;
+
+&lt;p&gt;Overall the change took 3 weeks of part-time work. I kept both script styles functional during the transition which was absolutely vital due to the size of the changes required.&lt;/p&gt;
+
+&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+&lt;p&gt;Spending the time to go deep on a system that was completely functional to begin with paid off.&lt;/p&gt;
+
+&lt;p&gt;The uneasy feeling I had of not fully understanding a technology I was using was vanquished.&lt;/p&gt;
+
+&lt;p&gt;The speed boost to the game was huge, it went from around 200fps to near 1000. Keep in mind the title I am running is a retro style running on a gaming laptop.&lt;/p&gt;
+
+&lt;p&gt;Memory footprint now clearly rise and fall when levels were loaded and unloaded.&lt;/p&gt;
+
+&lt;p&gt;The hardest part of the change is now my game scripting structure is completely different and even though I was the one who re-engineered it, I was really used to the old style. The new style is going to take some time to get used to.&lt;/p&gt;</content><author><name></name></author><category term="indiedev" /><category term="update" /><summary type="html">Introduction I took the decision to switch my scripting engine to lua from python. This was due to a few reasons outside the scope of this article, however the biggest draw for me was the simplicity of the lua integration.</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/Images/CoverAAA.jpg" /><media:content medium="image" url="http://localhost:4000/assets/Images/CoverAAA.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Creating a Steam Capsule</title><link href="http://localhost:4000/indiedev/update/2023/03/05/CreatingASteamCapsule.html" rel="alternate" type="text/html" title="Creating a Steam Capsule" /><published>2023-03-05T10:20:01+00:00</published><updated>2023-03-05T10:20:01+00:00</updated><id>http://localhost:4000/indiedev/update/2023/03/05/CreatingASteamCapsule</id><content type="html" xml:base="http://localhost:4000/indiedev/update/2023/03/05/CreatingASteamCapsule.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;In preparation for bringing ChaosTheDevil to the public I started researching the best way to make the game available.&lt;/p&gt;
+
+&lt;p&gt;Being a solo dev I have to be conscious of where I focus my time. I want the most bang for my buck (time).&lt;/p&gt;
+
+&lt;p&gt;I turned to GDC talks to get a deeper understanding of the topic.&lt;/p&gt;
+
+&lt;p&gt;The research suggested the following points:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Steam traffic greatly out performs other platforms such as itch.io.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Your Steam page is the most important part of Marketing.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Most users that find your game will find it through Steam.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Nobody reads the Steam descriptions (including me).&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Your game can live and die by a Steam capsule.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The best Steam Capsules are not screenshots.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;I decided to take some time out to focus on producing some marketing and concept art.&lt;/p&gt;
+
+&lt;p&gt;Here I document my experience.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/SteamCapsuleArticle/ChaosTheDevilCover.jpg&quot; alt=&quot;Affine warping effect on polygons with offscreen vertices&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;Marketing material I had been using to this point. Rendered in game screenshot, apparently a big no no.&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h1 id=&quot;contents&quot;&gt;Contents&lt;/h1&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;#Why-not-commission-one?&quot;&gt;Why not commission one?&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#Why-not-use-AI?&quot;&gt;Why not use AI?&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#Preparation&quot;&gt;Preparation&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#Overview-of-design-process&quot;&gt;Overview of design process&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#Result&quot;&gt;Result&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#Conclusion&quot;&gt;Conclusion&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;why-not-commission-one&quot;&gt;Why not commission one?&lt;/h1&gt;
+&lt;p&gt;This could be a sensible route with the idea of keeping my focus on the other development. However, I chose to do this myself for a few reasons.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;I want to push my art skills.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;I don’t want to spend time looking for a contractor.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;I don’t want to spend time managing a contractor.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;I am going to need a lot of marketing material tailored to meet the needs of different sites and this could quickly become costly or limiting.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;why-not-use-ai&quot;&gt;Why not use AI?&lt;/h1&gt;
+&lt;p&gt;I want to have complete control of the images.&lt;/p&gt;
+
+&lt;h1 id=&quot;preparation&quot;&gt;Preparation&lt;/h1&gt;
+&lt;p&gt;I decided to use InkScape, a vector graphics program. It’s free, I can make infinite tweaks, don’t have to decide on a resolution, and I have prior experience with it.&lt;/p&gt;
+
+&lt;p&gt;This GDC talk[TODO] by bla argued that it was important that the Capsule captured the style of the genre and identified that each game style had similar capsules. The idea being that the user could identify the game type from the Capsule style alone.&lt;/p&gt;
+
+&lt;p&gt;Luckily ChaosTheDevil has a very solid idea of itself. So I spent some time browsing the platformer category on Steam and copied capsules into an inspiration board. I included AAA and Indie titles and included successful and obscure titles.&lt;/p&gt;
+
+&lt;p&gt;Things of note with the capsules:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;The capsules of the genre did appear to have a similar style. Focus on Main character, environments/supplementary cast behind.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;AAA and indie were pretty different. Indie had much less going on and relied more on artistic style, while AAA had a polished cartoon perfection to them.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The obscure titles had more occurrences of inclusion of game renders.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;There was a direct correlation with quality and my awareness of the title.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;overview-of-design-process&quot;&gt;Overview of design process&lt;/h1&gt;
+&lt;p&gt;I stopped programming to focus entirely on one image. I spent around a month iteratively designing a single capsule.&lt;/p&gt;
+
+&lt;p&gt;The design was actually really 6 different components.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;The character (aided by having a render similar to what I wanted as a start point).&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The lava cave scene&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The castle waterfall scene&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The ice mountains scene&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The logo&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Finial composition and ensuring that all these components worked together.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Each component was made in an iterative process. First outlining basic shapes and then slowly adapting and adding more detail.&lt;/p&gt;
+
+&lt;p&gt;DESIGN GIF&lt;/p&gt;
+
+&lt;h1 id=&quot;result&quot;&gt;Result&lt;/h1&gt;
+&lt;p&gt;| &lt;img src=&quot;/assets/Images/Blog/SteamCapsuleArticle/TwitchBanner.png&quot; alt=&quot;Affine warping effect on polygons with offscreen vertices&quot; class=&quot;blog-img&quot; /&gt; |
+|:–:|
+| &lt;em&gt;Twitch banner - Steam capsule design adapted to fit twitch banner specifications. Shows the most of the design.&lt;/em&gt; |&lt;/p&gt;
+
+&lt;p&gt;I was also able to adapt the file for an array of different sites.&lt;/p&gt;
+
+&lt;p&gt;Most sites required landscape images but some such as the Steam vertical image, required portrait. Portrait images were the most challenging to compose as my source images were all designed with landscape in mind.&lt;/p&gt;
+
+&lt;p&gt;The hardest site to make a cover image for was YouTube as it required so many different variations for all the different supported hardware. It lead to a very different design to the others which I wasn’t too happy with. However, I don’t expect many users are actually going to watch my youtube videos on their TVs so I am probably fine.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/SteamCapsuleArticle/SteamMaterials.png&quot; alt=&quot;Affine warping effect on polygons with offscreen vertices&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;Steam materials - Shows capsule, main capsule and vertical capsule. Varying compositions created efficiently via separate art elements.&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+&lt;p&gt;I am very happy with the final result and the change from programming was thoroughly enjoyable. Losing myself in art so completely for over a month was very satisfying and I have to say I miss it.&lt;/p&gt;
+
+&lt;p&gt;The best technique I would recommend is ensuring along the way that the disparate pieces of the image hold together during design. Many times I altered the design of the base elements, as they clashed when brought into the final composition. It proved to be a great design guide to keep the parts working together, when in theory I could have drawn anything.&lt;/p&gt;
+
+&lt;p&gt;e.g. using the colour red in the background scenes often caused the main character to blend in with the background.&lt;/p&gt;
+
+&lt;p&gt;As a solo devs we need to use time efficiently, we should prefer to make decisions which can result in maximum flexibility. The image I produced is entirely vector graphics, nothing is raster. I am able to alter the image for other marketing materials which require different image sizes to the capsule fairly easily.&lt;/p&gt;
+
+&lt;p&gt;So easily, for fun I even created a large version to put on my office wall.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/SteamCapsuleArticle/A3.png&quot; alt=&quot;Affine warping effect on polygons with offscreen vertices&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;A3 Poster created mostly for fun.&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</content><author><name></name></author><category term="indiedev" /><category term="update" /><summary type="html">Introduction In preparation for bringing ChaosTheDevil to the public I started researching the best way to make the game available.</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/Images/Blog/SteamCapsuleArticle/ChaosTheDevilCover.jpg" /><media:content medium="image" url="http://localhost:4000/assets/Images/Blog/SteamCapsuleArticle/ChaosTheDevilCover.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">How to make music for your indie game</title><link href="http://localhost:4000/indiedev/update/2022/07/11/HowToMakeMusic.html" rel="alternate" type="text/html" title="How to make music for your indie game" /><published>2022-07-11T11:20:01+01:00</published><updated>2022-07-11T11:20:01+01:00</updated><id>http://localhost:4000/indiedev/update/2022/07/11/HowToMakeMusic</id><content type="html" xml:base="http://localhost:4000/indiedev/update/2022/07/11/HowToMakeMusic.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;Game music plays a huge role in generating the correct feel for a game. The best soundtracks help transport the player through the game world.&lt;/p&gt;
+
+&lt;p&gt;But how do you make music for games with zero prior musical experience.&lt;/p&gt;
+
+&lt;p&gt;In this article I discuss my journey into an unknown world to me, the world of game music production.&lt;/p&gt;
+
+&lt;p&gt;It’s important to note that I am obviously not an expert, not even close, this is a guide written by the opposite of an expert; a diary of how a music novice went about creating songs and ended up with something passable like this.&lt;/p&gt;
+
+&lt;div class=&quot;post-content-main&quot;&gt;
+&lt;iframe width=&quot;560&quot; height=&quot;50&quot; src=&quot;https://www.youtube.com/embed/vfQB4kRcDxo?si=WCGCxLHvRFBxPXZ9&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&quot; allowfullscreen=&quot;1&quot;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+
+&lt;p&gt;My hope is that my experience can help others in the same boat.&lt;/p&gt;
+
+&lt;h1 id=&quot;contents&quot;&gt;Contents&lt;/h1&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;#Why-make-the-music-myself?&quot;&gt;Why make the music myself?&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#My-target-music-style&quot;&gt;My target music style&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#Training-my-ear&quot;&gt;Training my ear&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#Selecting-music-production-software&quot;&gt;Selecting music production software&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#Understanding-the-LMMS-Interface&quot;&gt;Understanding the LMMS Interface&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#Attaining-realistic-instruments&quot;&gt;Attaining realistic instruments&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#Deconstructing-Croc&quot;&gt;Deconstructing Croc&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#20-Songs-in-20-days&quot;&gt;20 Songs in 20 days&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#Random-approach&quot;&gt;Random approach&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#Planned-approach&quot;&gt;Planned approach&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#Chord-progression-approach&quot;&gt;Chord progression approach&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#Which-instrument-to-start-with&quot;&gt;Which instrument to start with&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#Conclusion&quot;&gt;Conclusion&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;why-make-the-music-myself&quot;&gt;Why make the music myself?&lt;/h1&gt;
+&lt;p&gt;The first thing I want to briefly touch on is that probably the easiest way to get past this problem is to outsource it to experts.&lt;/p&gt;
+
+&lt;p&gt;So, why bother?&lt;/p&gt;
+
+&lt;p&gt;My current game project, Chaos the Devil, is a completely self designed project written atop my custom engine. I use my game projects as a way to learn in an applied environment. Music production is a side to game development I have only touched briefly and I want to expand that knowledge.&lt;/p&gt;
+
+&lt;h1 id=&quot;my-target-music-style&quot;&gt;My target music style&lt;/h1&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/Images/Blog/Ps1Platformers.jpg&quot; alt=&quot;Playstation 1 Platformers&quot; class=&quot;blog-img&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Chaos the Devil aims to emulate the feel of PS1 3D platformers such as Croc and Crash Bandicoot. Soundtracks from that time are classic. However, they are simple compared to todays full orchestral game soundtracks.&lt;/p&gt;
+
+&lt;p&gt;I have never written any music before, and I’m not about to hire an orchestra. My hope is that this style will be an achievable challenge, not too complicated but still not at all easy.&lt;/p&gt;
+
+&lt;h1 id=&quot;training-my-ear&quot;&gt;Training my ear&lt;/h1&gt;
+&lt;p&gt;I started with the basics, trying to get a basic appreciation of the target style. For months, every time I had chance to listen to music, I would listen to PS1 era soundtracks.&lt;/p&gt;
+
+&lt;p&gt;Buying food in the shops, I would rock out to Rachet and Clank.&lt;/p&gt;
+
+&lt;p&gt;Trying to hush my babies to sleep, I would be listening to creepy Croc dungeons&lt;/p&gt;
+
+&lt;p&gt;Walking to buy my 100th daily coffee, I would listen to Spyro.&lt;/p&gt;
+
+&lt;p&gt;While listening, I challenged myself to break down the songs, notice patterns and identify instruments. The hope was that I might be able to emulate the musical tricks.&lt;/p&gt;
+
+&lt;p&gt;I expanded this by focusing on a different instruments.&lt;/p&gt;
+
+&lt;p&gt;Trying to answer:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;what sort of beat was it doing?&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Was the sound something that looped?&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;How often did it loop?&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;How many notes did it have?&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Was the tempo slow or fast?&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Some instruments were easier to understand than others. e.g. I found melody and percussion simple, but bass and background elements much harder to isolate.&lt;/p&gt;
+
+&lt;p&gt;Patterns started to emerge:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Songs were about a minute long, shorter than I imagined.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Instruments mostly had two tune patterns that would play during the song, switching at different times.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Songs felt like they would deconstruct at points. Some instruments muting while the main melody continued, then return.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Instruments could steal the melodies from one another.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Instruments could do what I thought of as a call and response style for the melody. One instrument would play a tune, the other would respond.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;The songs were matched in mood to levels:
+    &lt;ul&gt;
+      &lt;li&gt;creepy&lt;/li&gt;
+      &lt;li&gt;happy&lt;/li&gt;
+      &lt;li&gt;grand battle.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;There were environmental sounds mashed in with the music, such as birds singing or water running.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;selecting-music-production-software&quot;&gt;Selecting music production software&lt;/h1&gt;
+&lt;p&gt;I don’t play an instrument and I don’t have any recording equipment. I needed a software package that could help me out.&lt;/p&gt;
+
+&lt;p&gt;When I was a kid I remember getting a demo on a CD of a software package for creating dance music called DanceEjay.  What you would do is grab little predefined music loops, and place them on a timeline to make what you would then say is a song. I was hoping to find whatever the modern equivalent might be.&lt;/p&gt;
+
+&lt;p&gt;After some googling, I found out that what I was looking for was a DAW (Digital Audio Workstation). This post is not going to go deep into DAW options (there are loads), I will just skip straight to what I used.&lt;/p&gt;
+
+&lt;p&gt;LMMS is a bit like the DanceEJay, a place blocks style production. One difference, you also write the blocks. Good on the one hand that the songs made will actually be original songs, but bad as I had no idea how to do that.&lt;/p&gt;
+
+&lt;h2 id=&quot;understanding-the-lmms-interface&quot;&gt;Understanding the LMMS Interface&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/Images/Blog/MusicArticle/LMMSInterface.jpg&quot; alt=&quot;Posterisation example changing source colours vs colour pallette&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;I found a great &lt;a href=&quot;https://www.youtube.com/watch?v=TrMTlpeSw8Y&amp;amp;list=PLqazFFzUAPc4K1To5JTtR3cskcdRifM1M&quot;&gt;tutorial series&lt;/a&gt; I recommend which gives a great overview of the LMMS interface.&lt;/p&gt;
+
+&lt;p&gt;After watching this, I had the basics of how to compose music by placing notes and blocks of notes to make rudimentary songs.&lt;/p&gt;
+
+&lt;p&gt;At this stage all songs produced still sounded terrible, but at least I could create sounds.&lt;/p&gt;
+
+&lt;h2 id=&quot;attaining-realistic-instruments&quot;&gt;Attaining realistic instruments&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/Images/Blog/MusicArticle/VSTBanner.jpg&quot; alt=&quot;Posterisation example changing source colours vs colour pallette&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Unfortunately, to this point, every instrument I tried to play with just made me sound like I was making a euro dance song.&lt;/p&gt;
+
+&lt;p&gt;Thumping synth bass with synth melody over the top. A million miles away from the sounds of Croc and Crash.&lt;/p&gt;
+
+&lt;p&gt;I was finally saved when I started playing with VST plugins. VST (Virtual Instrument) are fancy ways to package presets which focus on creating types of sounds. For example you may have a VST which attempts to create guitar like sounds.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Word of warning here&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;I found the sites that host these VSTs felt like traveling back in time to virus ridden backwaters of the internet. Click with care!&lt;/p&gt;
+
+&lt;h1 id=&quot;deconstructing-croc&quot;&gt;Deconstructing Croc&lt;/h1&gt;
+&lt;p&gt;Next, I attempted to deconstruct one of the tracks from Croc.&lt;/p&gt;
+
+&lt;p&gt;I put a simple click beat on and attempted to get the beats to match the tempo of the song by slowly adjusting the track tempo.&lt;/p&gt;
+
+&lt;p&gt;Then, I tried to hear an instrument and copy what was going on.&lt;/p&gt;
+
+&lt;p&gt;Finally, I experimented with VSTs to try and get a similar sound.&lt;/p&gt;
+
+&lt;p&gt;The result was a track that I would describe as:&lt;/p&gt;
+
+&lt;p&gt;obviously supposed to be the same song…&lt;/p&gt;
+
+&lt;p&gt;but, some sort of slightly discordant deranged version.&lt;/p&gt;
+
+&lt;p&gt;I learnt a huge amount from doing this and was energised to continue to the next step.Though, due to copyright reasons I cannot share the result.&lt;/p&gt;
+
+&lt;h1 id=&quot;20-songs-in-20-days&quot;&gt;20 Songs in 20 days&lt;/h1&gt;
+&lt;p&gt;Next plan was to create 20 songs in 20 days. The idea was to challenge myself to quickly experiment with song creation and not to get bogged down focusing on one approach.&lt;/p&gt;
+
+&lt;h2 id=&quot;random-approach&quot;&gt;Random approach&lt;/h2&gt;
+&lt;p&gt;The first songs I attempted followed a very stab in the dark style. I would randomly add notes to a block, listen back and make adjustments that felt right.&lt;/p&gt;
+
+&lt;p&gt;By felt right, I noticed that when listening, my mind would conjure certain expectations for what it thought the next notes should be. It probably sounds a bit strange, but I relied heavily on this feeling, and you may be just as surprised as I was that it’s something that you will feel too.&lt;/p&gt;
+
+&lt;h2 id=&quot;planned-approach&quot;&gt;Planned approach&lt;/h2&gt;
+&lt;p&gt;While making my daily trip to get a morning coffee, I hummed little tunes into my phone. Tunes that reminded me of PS1 platformer styles.&lt;/p&gt;
+
+&lt;p&gt;I then listen back, and attempted to copy the notes into LMMS blocks. This was far harder than the random approach. Matching the tempo and tone of my humming proved to be much more time consuming and frustrating. However, the approach did produce some good songs.&lt;/p&gt;
+
+&lt;h2 id=&quot;scale-approach&quot;&gt;Scale approach&lt;/h2&gt;
+&lt;p&gt;I was still watching LMMS tutorials during this time and a very useful feature came up. LMMS allows you to select a scale you want for the song. This highlighted all notes in that scale.&lt;/p&gt;
+
+&lt;p&gt;For example, minor scale notes gave automatic uneasy sounds. Previously, I was just using the black notes to be creepy, but this new style allowed me to produce much better sounding songs.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/MusicArticle/MarkScale.jpg&quot; alt=&quot;Posterisation example changing source colours vs colour pallette&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;Select the scale from the drop down in the top tool bar, then right click on the key you want to base the scale off, here C, and all notes in that scale will be highlighted.&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&quot;chord-progression-approach&quot;&gt;Chord progression approach&lt;/h2&gt;
+&lt;p&gt;I expanded to more music generic tutorials and not just LMMS focussed. While most of it was way over my head, one easy addition to my toolkit was using correct chord progression.&lt;/p&gt;
+
+&lt;p&gt;By following a simple technique outlined in this video LINK my basslines really improved.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/MusicArticle/Chords.jpg&quot; alt=&quot;Posterisation example changing source colours vs colour pallette&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;Chords added using the chord dropdown from the tool menu. Chord selection dictated by highlighted scale in key of C, followed by applying the Major-Minor-Minor-Major-Major-Minor-Diminished&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&quot;which-instrument-to-start-with&quot;&gt;Which instrument to start with&lt;/h2&gt;
+&lt;p&gt;A great way I found to keep each song really different was to select a different instrument to start with each time.&lt;/p&gt;
+
+&lt;p&gt;The effect was massive. Songs I started with choir instruments produced floaty songs, songs which I started with acoustic drums got an upbeat intense feel.&lt;/p&gt;
+
+&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+&lt;p&gt;I successfully created 20 songs in 20 days.&lt;/p&gt;
+
+&lt;p&gt;The quality varied hugely.&lt;/p&gt;
+
+&lt;p&gt;I feel I was able to go from complete novice, to a place where I feel I now have the start of some tracks for my game ChaosTheDevil.&lt;/p&gt;
+
+&lt;p&gt;The hardest part was simply, sitting down, learning the new bit of software and not programming.&lt;/p&gt;
+
+&lt;p&gt;I was surprised by the feeling my brain knew how these totally new songs should go. Magically having a sense which notes were wrong and what should come next.&lt;/p&gt;
+
+&lt;p&gt;Ultimately, I found the whole experience enjoyable and rewarding, and feel my understanding of gamedev strengthened greatly.&lt;/p&gt;
+
+&lt;p&gt;The songs I made are a first pass. I expect to improve them with time.&lt;/p&gt;</content><author><name></name></author><category term="indiedev" /><category term="update" /><summary type="html">Introduction Game music plays a huge role in generating the correct feel for a game. The best soundtracks help transport the player through the game world.</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/Images/Blog/Lmms.jpg" /><media:content medium="image" url="http://localhost:4000/assets/Images/Blog/Lmms.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Rendering in Playstation 1 style in OpenGL</title><link href="http://localhost:4000/indiedev/update/2022/06/02/rendering-ps1.html" rel="alternate" type="text/html" title="Rendering in Playstation 1 style in OpenGL" /><published>2022-06-02T19:45:19+01:00</published><updated>2022-06-02T19:45:19+01:00</updated><id>http://localhost:4000/indiedev/update/2022/06/02/rendering-ps1</id><content type="html" xml:base="http://localhost:4000/indiedev/update/2022/06/02/rendering-ps1.html">&lt;p&gt;This article outlines the techniques I used to emulate a PS1-style game in OpenGL. I use my own engine for this article, but if you are using one of the popular game engines you will still find the information useful.&lt;/p&gt;
+
+&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;When creating a brand new Hello World OpenGL project, you will have in front of you a far superior render than the days of Virtual Fighter and Crash Bandicoot. Things have moved on a great deal. Where the developers of old spent effort making their games look as good as possible, we now must spend effort to recreate the simpler aesthetic of these old games.&lt;/p&gt;
+
+&lt;h1 id=&quot;contents&quot;&gt;Contents&lt;/h1&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;#motivation&quot;&gt;Motivation&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#textures&quot;&gt;Textures&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#polygons&quot;&gt;Polygons&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#rendering&quot;&gt;Rendering&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#conclusion&quot;&gt;Conclusion&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;motivation&quot;&gt;Motivation&lt;/h1&gt;
+&lt;p&gt;I am developing an old-school 3D platformer &lt;a href=&quot;/indiedev/update/2021/08/11/chaos-the-devil-announcement.html&quot;&gt;Chaos The Devil&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The idea is to recreate the look and feel of PS1 greats like Crash Bandicoot and Spyro The Dragon.&lt;/p&gt;
+
+&lt;p&gt;I aim to do this by applying techniques to create renders which emulate these titles. I am &lt;strong&gt;NOT&lt;/strong&gt; going to restrict myself to the technical limitations of the day.&lt;/p&gt;
+
+&lt;p&gt;While researching this topic online, I found a wealth of forum posts and Reddit threads suggesting how to achieve this look. However, implementation proofs of these theories were lacking. This article will therefore highlight the issues I had when implementating these techniques in a real world game dev environment.&lt;/p&gt;
+
+&lt;h1 id=&quot;textures&quot;&gt;Textures&lt;/h1&gt;
+&lt;h2 id=&quot;resolution-and-depth&quot;&gt;Resolution and Depth&lt;/h2&gt;
+
+&lt;p&gt;Textures in PS1 games have a distinct look, more like pixel art than true representations.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/PS1Article/Tomb_Raider1_Low_Texture_Resolution_PS1.jpg&quot; alt=&quot;Tomb Raider 1 Texture resolution&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;Tomb Raider 1 low texture resolution examples&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;&lt;strong&gt;Why doesn’t this happen anymore?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;OpenGL allows you to plaster any image of your choosing into a graphics scene. Performance-wise, we can really wack up texture sizes these days. The richness in colour of the images we can use as textures is far greater, and we can have full, smooth, transparent sections.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;So how do we get it back?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;We need to work inside the technical limits of the PS1.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Mode 4: 4-bit CLUT (16 colors)&lt;/li&gt;
+  &lt;li&gt;Mode 8: 8-bit CLUT (256 colors)&lt;/li&gt;
+  &lt;li&gt;Mode 15: 15-bit direct (32,768 colors)&lt;/li&gt;
+  &lt;li&gt;Mode 24: 24-bit (16,777,216 colors)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/PlayStation_technical_specifications&quot;&gt;Source: PS1 technical specification&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;From reading whatever I could find about this on the net, it is suggested that the high colour depths were mainly used for static images, and the lower depths were used for in-game polygons.&lt;/p&gt;
+
+&lt;p&gt;The approach I took was more artistic than scientific. I studied the textures used in PS1 games and tried to match their look, limiting colour pallets to suit.&lt;/p&gt;
+
+&lt;p&gt;It is often suggested that you could get textures to gain this look in the shader by posterising. However, the PS1 supported colour lookup tables (CLUT), and posterising would actually alter colours.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/PS1Article/PS1_Style_Posterise_Comparison.jpg&quot; alt=&quot;Posterisation example changing source colours vs colour pallette&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;Left: Original source texture. Right: Reduced colours. Centre: Effect of posterising which introduces undesirable colours&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;The PS1 was capable of pushing 90k-180k textured polygons a second. However, it was able to push 360k when un-textured &lt;a href=&quot;https://en.wikipedia.org/wiki/PlayStation_technical_specifications&quot;&gt;see technical Spec&lt;/a&gt;. This use of un-textured polygons was often used in conjunction with vertex colouring to increase efficiency. The Crash Bandicoot model was mostly un-textured and, with this in mind, I redesigned my main character to use vertex colouring rather than texture mapping. I also heavily reduced the polygon count to 512 triangles, which was tougher than imagined.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/CharacterDetail.jpg&quot; alt=&quot;Chaos the devil hi vertex resolution vs low vertex resolution&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;Left, hi-poly character coloured with texture mapping. Right, low poly PS1-style character coloured using vertex colouring&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&quot;texture-rendering&quot;&gt;Texture Rendering&lt;/h2&gt;
+&lt;p&gt;The textures of the PS1 are unmistakable- they are blocky, colourful, sparsely-pixelated and appear to have a personality themselves.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/PS1Article/PS1_Affine_Texure_Mapping_Effect_In_Tomb_Raider.jpg&quot; alt=&quot;Tomb Raider 1 showing warped affine textures&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;Tomb Raider 1 on PS1 showing warped textures&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;&lt;strong&gt;What’s going on?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Textures being applied to triangles (texture mapping) put in very simple terms work by storing a texture map coordinate for each vertex. These coordinates are then interpolated across the triangle and used to deform the image so that it appears to be on the triangle.&lt;/p&gt;
+
+&lt;p&gt;We look up which is the closest pixel to the calculated lookup point and that is the colour chosen for that part of the triangle. Ultimately this is transformed to pixels.&lt;/p&gt;
+
+&lt;p&gt;With this approach you would expect a few issues.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;When the texture is close to the viewer, the pixels can become very large.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;When the texture is far away, shimmering becomes an issue as the calculation tries to frantically decide which tiny pixel to display from the texture.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;If the texture is applied to a surface that is not perpendicular to the viewer, it gains a warping effect.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;Why doesn’t this happen anymore?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;It does, but most example code found on the internet includes settings to mitigate or remove these issues.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Textures have interpolation settings in OpenGL.  &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GL_NEAREST&lt;/code&gt;  for example, has the effect of interpolating pixel colour where appropriate, which leads to smoothing of the texture.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Likewise, shimmering is solved with a combination of this pixel interpolation and the addition of mipmaps. See &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GL_GENERATE_MIPMAP&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The way the PS1 handles textures is quite basic- it simply projects the texture onto the polygon (affine). It does not take perspective into account. Perspective correction is now default for OpenGL, which solves the warping.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;So how do we get it back?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;To get that pixelated look back, we need to turn interpolation mode to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GL_LINEAR&lt;/code&gt; in our textures.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;To gain shimmering textures, we can turn off mipmap generation.
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;To turn off perspective correction on textures, we can use noperspective in our shader.
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;noperspective vec2 UV;&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The largest impact was the change to affine interpolation of textures. This is most noticeable on faces which are near to the camera.&lt;/p&gt;
+
+&lt;p&gt;I did encounter an issue I wasn’t expecting. Triangles which had offscreen vertices didn’t work well with affine texturing. This is probably due to the fact that the clip stage alters the geometry, breaking down faces so they fit onscreen. Affine texture mapping goes crazy when this happens.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/PS1Article/PS1_Affine_Texture_Mapping_Warp_With_Offscreen_Vertices.gif&quot; alt=&quot;Affine warping effect on polygons with offscreen vertices&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;Affine warping effect on polygons which contain offscreen vertices&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;I also faced a problem that was much more anticipated. Affine textures are most noticeable when textures contain straight lines. This was an issue that the PS1 developers also had to contend with, so it looks like we are on the right track.&lt;/p&gt;
+
+&lt;p&gt;I mitigated both these issues by adding geometry to the scene. I decided to add the extra polygons on load- this way I can more successfully adjust each scene section to work as well as possible. Tesselation could also be done in the shader, however, dynamically changing the tesselation level is noticeable due to the affine texture mapping.&lt;/p&gt;
+
+&lt;p&gt;At this point I thought I was done, but then I found &lt;a href=&quot;https://retrocomputing.stackexchange.com/questions/5019/why-do-3d-models-on-the-playstation-1-wobble-so-much&quot;&gt;another discussion&lt;/a&gt; regarding how the PS1 handled clipping. Apparently, the PS1 clipped entire polygons and the developer had to deal with this. This explains why the strange affine warping didn’t occur on the PS1- there are no polygons which contain vertices outside the view.&lt;/p&gt;
+
+&lt;p&gt;Apparently, to deal with this, the developer would have to subdivide polygons to minimise the problem and ultimately force the remaining points into view.&lt;/p&gt;
+
+&lt;p&gt;As geometry is added to the surface, the affine texture-mapping improves so there is a very visible snap occurring in the polygons which require clipping. This is a curious effect that I witnessed in Tomb Raider.&lt;/p&gt;
+
+&lt;p&gt;To recreate this effect, I first tried to use the techniques required to subdivide triangles requiring clipping in the shader and then forcing all vertices into view, and it sort of worked.&lt;/p&gt;
+
+&lt;p&gt;The problem with this approach is that some of my meshes are not closed, but next to one another as level blocks, so forcing vertices around made visible holes appear. The other issue was that this approach required substantial changes to my pipeline which I decided was not worth it.&lt;/p&gt;
+
+&lt;p&gt;Instead I went with faking the effect, which is well within my brief.&lt;/p&gt;
+
+&lt;p&gt;I passed two versions of vec2 UV to the fragment shader, one with perspective correction and the other without for affine. I also passed through a flag which indicated when all vertices of the polygon being rendered were within the view frustrum. If they were, I used the affine UV vector, and if not I used the perspective-corrected vector for UVs.&lt;/p&gt;
+
+&lt;p&gt;So when the camera gets close to a polygon there is a visible jump in interpolation quality, which I think gives a good approximation.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/PS1Article/PS1_Style_False_Tesselation.gif&quot; alt=&quot;Example of combining depth buffer and painter algorithm to achieve false tesselation snapping for polygons with offscreen vertices&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;Left, full affine texture-mapped render. Middle, blue highlights showing polygons which contain offscreen vertices. Right, result of combining perspective texture mapping for polygons with offscreen vertices and affine texture mapping for polygons which reside completely inside view frustrum.&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h1 id=&quot;polygons&quot;&gt;Polygons&lt;/h1&gt;
+&lt;h2 id=&quot;jittering&quot;&gt;Jittering&lt;/h2&gt;
+
+&lt;p&gt;Triangles that make up the 3D shapes in a PS1 game, as well as popping &lt;a href=&quot;#popping-triangles&quot;&gt;(see popping triangles section)&lt;/a&gt; appear to dance all over place.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;What’s going on?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The PS1 doesn’t support sub-pixel precision when presenting to the frame buffer. This means that when a vertex position is calculated, it snaps to the nearest pixel. The low frame resolutions compound this issue, so the snapping is quite noticeable.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/PS1Article/PS1_Low_Vertex_Precision.gif&quot; alt=&quot;Tomb Raider 1 and Croc showing vertex jitter&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;Jittering present in Tomb Raider 1 and Croc Legend of the Gobbos&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;&lt;strong&gt;Why doesn’t this happen anymore?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;We can now have subpixel vertex precision and anti-aliasing means even greater precision. This means that our polygons end up exactly where we expect them to be.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;So how do we get it back?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Reduce the precision, which can be done in the vertex shader.&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;//position is post MVP translation of vertex&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;vec4&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;to_low_precision&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vec4&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;position&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vec2&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resolution&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;c1&quot;&gt;//Perform perspective divide&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;vec3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;perspective_divide&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;position&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xyz&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vec3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;position&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+	
+	&lt;span class=&quot;c1&quot;&gt;//Convert to screenspace coordinates&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;vec2&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;screen_coords&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;perspective_divide&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xy&lt;/span&gt; 
+							&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vec2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;1.0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;1.0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; 
+							&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vec2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;resolution&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;resolution&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; 
+							&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+	&lt;span class=&quot;c1&quot;&gt;//Truncate to integer&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;vec2&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;screen_coords_truncated&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vec2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;screen_coords&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+										&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;screen_coords&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+	
+	&lt;span class=&quot;c1&quot;&gt;//Convert back to clip range -1 to 1&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;vec2&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reconverted_xy&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;screen_coords_truncated&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vec2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+							 &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vec2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;resolution&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;resolution&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; 
+							&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vec2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+	&lt;span class=&quot;c1&quot;&gt;//Construct return value&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;vec4&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ps1_pos&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vec4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reconverted_xy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+						&lt;span class=&quot;n&quot;&gt;reconverted_xy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+						&lt;span class=&quot;n&quot;&gt;perspective_divide&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+						&lt;span class=&quot;n&quot;&gt;position&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+	&lt;span class=&quot;n&quot;&gt;ps1_pos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xyz&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ps1_pos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xyz&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vec3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;position&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+										&lt;span class=&quot;n&quot;&gt;position&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+										&lt;span class=&quot;n&quot;&gt;position&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ps1_pos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;When applying this to a real game context, I noticed a side effect that I haven’t seen discussed elsewhere.&lt;/p&gt;
+
+&lt;p&gt;When using this method we are adding a slight offset to the vertex positions, so the shape of the polygon is slightly altered. This works great, as long as all the vertices are aligned exactly.&lt;/p&gt;
+
+&lt;p&gt;However, if you have two shapes that are supposed to be together, but with vertices that are not aligned, seams can appear.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/PS1Article/PS1_Low_Vertex_Precision_Causing_Splitting_Explanation.jpg&quot; alt=&quot;Image illustrating seams appearing between polygons which are not closed meshes when applying low vertex precision technique&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;Left, desired objects rendered together. Right, result of applying a slight rotation with low vertex position precision causing visible gap between objects A and B&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;It is easiest to illustrate by example. Referring to the above image, on the left the two squares A and B are together as desired, on the right the two shapes have been rotated slightly and snapped to a grid. As you can see a gap appears between polygon A and B.&lt;/p&gt;
+
+&lt;p&gt;The best way to fix this is to have fully closed meshes. No doubt this was the approach used by PS1 games, however I need to keep some flexibility in my authoring as I need to keep the complexity of the project as low as possible.&lt;/p&gt;
+
+&lt;p&gt;Some fixes:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Skybox background which contains similar colours to the main floor, wall and sky works quite well, but limits the level design too much. I want to be able to move between different floor colours during the level.&lt;/li&gt;
+  &lt;li&gt;Either pragmatically or manually add vertices to the geometry to ensure all vertices match up. This is a bit of a pain to implement.&lt;/li&gt;
+  &lt;li&gt;Not clearing the colour buffer between draws and accumulating the render. Holes in geometry now are filled with similar colour from previous render. This does quite a good job- most seams are hard to see. The problem is now that the scene cannot rely on clear colours.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;I went with the approach of trying to keep my geometry lined up as much as possible, but where this is not possible I fall back to the third approach to cover seams.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/PS1Article/PS1_Style_Low_Vertex_Precision_Seams_Sparkles.gif&quot; alt=&quot;Seams created by low vertex precision causing sparkles&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;Left, untreated render showing black sparkles caused by seams appearing due to low vertex precision. Right, result of not clearing colour buffer between frames, making seams harder to see&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;After tackling this issue, I noticed the same thing occurring in Tomb Raider 1, which also uses a block system for level building. So, not fixing the issue is also acceptable.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/PS1Article/Low_Vertex_Precision_Causing_Seams_In_Tomb_Raider_PS1.jpg&quot; alt=&quot;Tomb Raider 1 showing seams caused by low vertex precision&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;Seam between level blocks visible in Tomb Raider 1 on PS1&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&quot;popping-triangles&quot;&gt;Popping Triangles&lt;/h2&gt;
+&lt;p&gt;When playing an old PS1 game, it is common to see triangles which appear to not quite behave themselves. Sometimes they rest above a surface they should be behind and pop in front and behind one another, which is very distracting.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/PS1Article/PS1_Triangle_Artifacts_From_Painters_Algorithm_In_Crash_Bandicoot_And_Resident_Evil.jpg&quot; alt=&quot;Examples of triangle artifacts when using painters algorithm on PS1&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;Playstation 1 triangle artifacts present in Crash Bandicoot 1 and Resident Evil 2&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;&lt;strong&gt;What’s going on?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;When we render something, we are actually performing many calculations which eventually boil down to ascertaining which pixels should have which colour.&lt;/p&gt;
+
+&lt;p&gt;So when we want to render a triangle, we work out where on the screen we want it to be using various mathematical transforms- we ascertain an x and a y coordinate and with 3D graphics we also get a z coordinate. This is not an issue with one triangle, but what about if there are two, or more? We need a way to calculate which triangle is on top.&lt;/p&gt;
+
+&lt;p&gt;We could just sort by the z value and render in order of farthest to nearest.&lt;/p&gt;
+
+&lt;p&gt;This is called the &lt;a href=&quot;https://en.wikipedia.org/wiki/Painter%27s_algorithm#:~:text=The%20painter%E2%80%99s%20algorithm%20%28also%20depth-sort%20algorithm%20and%20priority,area%20basis%20of%20other%20Hidden%20Surface%20Removal%20algorithms&quot;&gt;Painters Algorithm&lt;/a&gt; and is how the Playstation 1 handles things.&lt;/p&gt;
+
+&lt;p&gt;But there is a problem, when triangles intersect or lay in a complex layout, it becomes very tricky to ascertain the draw order of the triangles.&lt;/p&gt;
+
+&lt;p&gt;This is exactly what is happening on the PS1, resulting in flickering triangles.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/PS1Article/Triangle_Popping_Painters_Algorithm_PS1_Croc_And_Resident_Evil_2.gif&quot; alt=&quot;Animation showing triangle snapping artifacts on PS1 in Croc and Resident Evil 2&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;Triangle artifacts present in Croc Legend of the Gobbos and Resident Evil 2, caused by z-fighting of polygons&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;&lt;strong&gt;Why doesn’t this happen anymore?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Pretty much all 3D graphics programs don’t do it this way any more, even Hello World OpenGL applications are more sophisticated.&lt;/p&gt;
+
+&lt;p&gt;Nowadays, this issue is fixed with the use of a Depth Buffer. The z-depth value is stored for every pixel and tested against at a per-pixel level.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;So how do we get it back?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The simplest way to do this is to turn off the depth buffer and manually draw the triangles sorted by depth order.&lt;/p&gt;
+
+&lt;p&gt;However, sacrificing the depth buffer has the knock on effect that all vertex transformations also need to be done on the CPU, so this solution isn’t ideal.&lt;/p&gt;
+
+&lt;p&gt;I went another route- by utilising a geometry shader to flatten the triangles, we can create a fake painters algorithm effect.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/PS1Article/PS1_Style_Painters_Algorithm_Depth_VS_Depth_Buffer_Depth_OpenGL.jpg&quot; alt=&quot;Illustration of depth information differences between depth buffer and false painter algorithm&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;Left, standard colour render of scene. Middle, rendered depth values using depth buffer. Right, rendered depth values with false painters algorithm.&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/PS1Article/PS1_Style_Fake_Painters_Algorithm_Illusion.gif&quot; alt=&quot;Animation to explain how the false painters algorithm works&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;Left, standard render pipeline transforming vertices correctly with depth. Right, false painters algorithm warping polygons and flattening shape&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;I made the above illustration to try and show what is happening in the scene. As you can see, from the front the two cubes look identical, but when viewed from the side you can see the false painter algorithm on the right is a slight optical illusion and is actually made up of warped flat polygons.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Some code&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Most of the work is done in the geometry shader:&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Geometry Shader:&lt;/em&gt;&lt;/p&gt;
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#version 420
+&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;layout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;triangles&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;layout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;triangle_strip&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;max_vertices&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;VertexData&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;VertexIn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;out&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;VertexData&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;painter_depth&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+	&lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;VertexOut&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+
+&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;c1&quot;&gt;//Find best depth for painter algorithm&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;depth&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;1.0&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+	&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gl_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;	
+		&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl_Position&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;z&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl_Position&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; 
+			&lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl_Position&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;z&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl_Position&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+		&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+			&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;z_w&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gl_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl_Position&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;z&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gl_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl_Position&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+			&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;z_w&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;depth&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+			&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+				&lt;span class=&quot;n&quot;&gt;depth&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;z_w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+			&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+		&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+	&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gl_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;c1&quot;&gt;//Copy position&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;gl_Position&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gl_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl_Position&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+		&lt;span class=&quot;c1&quot;&gt;//Copy attributes&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;VertexOut&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;painter_depth&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;depth&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+		&lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+		
+		&lt;span class=&quot;c1&quot;&gt;//Create vertex&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;EmitVertex&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;	
+
+	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;The shader loops through all triangle vertices (transformed into clipspace by the vertex shader) and stores which depth is the furthest from the camera.&lt;/p&gt;
+
+&lt;p&gt;It then passes this depth as a vertex attribute to all vertices of the triangle so that it can be used in the fragment shader.&lt;/p&gt;
+
+&lt;p&gt;Here is a quick explanation of parts that may be confusing:&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl_Position&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;z&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl_Position&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; 
+			&lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl_Position&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;z&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gl_Position&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;This ensures that we only process the depth for vertices which are between near and far clip planes. The code inside this decision block performs a divide by w. This w-division is usually performed by OpenGL after the clip stage, however as we are doing it before we need to ensure that w is a valid value. Without this, vertices can end up flipped by depth.&lt;/p&gt;
+
+&lt;p&gt;You may also be thinking that it would be better to use the centre of the triangle as its depth, but as the above code sometimes skips vertices which are outside the depth clip ranges it becomes impossible to calculate this average value. We also avoid a divide, which is always a positive.&lt;/p&gt;
+
+&lt;p&gt;We could also just alter the depth of the vertices at this point, something like:&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;	&lt;span class=&quot;n&quot;&gt;gl_Position&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;z&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;depth&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;gl_Position&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;1.0&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;However, this is using w-divide before the clipping stage and breaks the render pipeline for triangles which have offscreen vertices. It also would cause the perspective interpolation to break which may not be desirable. For example, textures will lose perspective interpolation, which you may not want.&lt;/p&gt;
+
+&lt;p&gt;Just to finish off, all that is needed then in the fragment shader is the addition of one line.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Fragment Shader:&lt;/em&gt;&lt;/p&gt;
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;gl_FragDepth&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;VertexIn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;painter_depth&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This is simply overriding the fragment’s depth with the one we calculated. We do have to do a bit of maths to convert to the range which OpenGL expects.&lt;/p&gt;
+
+&lt;p&gt;One large issue when applying this to a real game was that meshes need to be optimised to work well. My levels are created around a basic block system which warps unit cubes into floor and walls.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/PS1Article/PS1_Style_Painters_Algorithm_OpenGL_Errors_With_Hidden_Surface_Fighting.jpg&quot; alt=&quot;Issues with polygon information when applying false painters algorithm&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;Left, standard render with wireframe overlay using depth buffer. Right, false painters algorithm showing hidden surface fighting&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;This scenario really didn’t work well with the painter algorithm approach. As you can see in the image above, on the left is a render using standard backbuffer, while the render on the right is utilising the fake painters algorithm. You can clearly see the once hidden surfaces clipping to the front, as they are about the same depth as the wall.&lt;/p&gt;
+
+&lt;p&gt;To fix this, I needed to be much more mindful of the polygons I am rendering. I altered my code to allow for the manual removal of faces during level authoring. This adds work to level creation workload, but it also leads to faster renders and is absolutely necessary to get the painter algorithm to work.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/PS1Article/PS1_Style_Painters_Algorithm_Result_OpenGL.gif&quot; alt=&quot;Comparison results of depth buffer render vs false painters algorithm render&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;Both left and right show the result of switching between standard depth buffer use and false painters algorithm. Triangle artifacts present in latter technique&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;The above animation shows the effect of switching between depth-buffer rendering and rendering with the painter algorithm. You can see triangle artifacts appear with the painters algorithm. These errors can be further reduced with tweaking in authoring, but I kept them very noticeable for this comparison. &lt;em&gt;Note: this image comparison also contains perspective/affine texture switching which is why the textures change. See Textures section for more on this.&lt;/em&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;rendering&quot;&gt;Rendering&lt;/h1&gt;
+
+&lt;h2 id=&quot;frame-resolution&quot;&gt;Frame Resolution&lt;/h2&gt;
+&lt;p&gt;The most obvious development in games is the increase in render resolution. PS1 games had much smaller resolution renders than we are used to these days.&lt;/p&gt;
+
+&lt;p&gt;The hardware we use to view the games has also changed. The world has since embraced widescreen aspect ratios and the PS1 aspect ratio was left behind.&lt;/p&gt;
+
+&lt;p&gt;But there is more to the PS1 render that needs to be considered. The PS1 scaled down its renders from 8bit to 5bit, which reduces colours. This introduces colour banding. This banding was then mitigated by adding dithering to the render.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/PS1Article/PS1_Style_Aspect_Ratio.jpg&quot; alt=&quot;Some old aspect ratio screens from PS1&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;Examples of aspect ratios for Playstation 1&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;&lt;strong&gt;Why doesn’t this happen anymore?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Computers got faster, greater resolutions could be supported and the need for hiding colour banding with dithering was no longer necessary.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;So how do we get it back?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;We need to render to a lower resolution than the screen that we will be presenting on. This is pretty easy to do, simply render to an offscreen render target and then render the result to a quad shape, which transforms to preserve correct aspect ratio based on window scale.&lt;/p&gt;
+
+&lt;p&gt;Resolution &lt;a href=&quot;https://en.wikipedia.org/wiki/PlayStation_technical_specifications&quot;&gt;technical spec&lt;/a&gt; for PS1:&lt;/p&gt;
+
+&lt;p&gt;Progressive: 256×224 to 640×240 pixels&lt;/p&gt;
+
+&lt;p&gt;Interlaced: 256×448 to 640×480 pixels&lt;/p&gt;
+
+&lt;p&gt;To transform the quad that the offscreen game is rendered to, I altered the orthographic camera settings.&lt;/p&gt;
+
+&lt;p&gt;I have included the code I used to do this. My engine uses Lua as its scripting engine, but should be pretty simple to follow and port to whatever language you like.&lt;/p&gt;
+
+&lt;div class=&quot;language-lua highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;window_x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;window_y&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;OrthographicCameraTop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;OrthographicCameraBottom&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    
+    &lt;span class=&quot;n&quot;&gt;image_ratio&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;window_extent_y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;render_resolution_y&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;image_width_sized&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;render_resolution_x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;image_ratio&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;ratio&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;window_extent_x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;image_width_sized&lt;/span&gt;
+
+	&lt;span class=&quot;n&quot;&gt;OrthographicCameraLeft&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ratio&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;OrthographicCameraRight&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ratio&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    
+  &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;OrthographicCameraLeft&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;OrthographicCameraRight&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    
+    &lt;span class=&quot;n&quot;&gt;image_ratio&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;window_extent_x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;render_resolution_x&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;image_height_sized&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;render_resolution_y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;image_ratio&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;ratio&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;window_extent_y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;image_height_sized&lt;/span&gt;
+
+	&lt;span class=&quot;n&quot;&gt;OrthographicCameraTop&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ratio&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;OrthographicCameraBottom&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ratio&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/PS1Article/PS1_Style_Aspect_Ratio_OpenGL.jpg&quot; alt=&quot;PS1 style aspect ratio rendered on wide screen adding bars to render&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;PS1 style aspect ratio rendered on wide screen, adding black portions to the screen to keep correct ratio&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Obviously, as seen above, this has the effect of adding black bars to the sides when displayed on a widescreen monitor. A massive development bonus here is that once this is set up, you no longer need to worry about supporting different screen sizes. Your game is always rendered to the same resolution, HUD can stay fixed, and you can completely control what is in view.&lt;/p&gt;
+
+&lt;h2 id=&quot;framebuffer-colour-depth&quot;&gt;Framebuffer colour depth&lt;/h2&gt;
+&lt;p&gt;As listed in the &lt;a href=&quot;https://en.wikipedia.org/wiki/PlayStation_technical_specifications&quot;&gt;technical spec&lt;/a&gt;, the PS1 supported dithering. It appears that developers used this to cover colour banding which occurred due to remapping bit depth to 15bit when rendering to screen.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=bi-Wzl6BwRM&quot;&gt;Video on PS1 dithering&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Looking on PS1 emulation fan forums, it looks like people often really dislike the dithering. &lt;a href=&quot;https://www.chrismcovell.com/psxdither.html&quot;&gt;This entire project&lt;/a&gt; aims to remove it. The thing is that on CRT displays the effect was not so noticeable. I therefore decided to implement this, but as I have done with all the PS1 graphics options, I have the setting exposed in a settings file so the user can turn it off if they want.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/PS1Article/Dithering_In_Silent_Hill_PS1.jpg&quot; alt=&quot;Screen from Silent Hill which is famous for heavy dithering use&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;Silent Hill on Playstation 1, showing a dramatic example of dithering use&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;To start with, we need to reduce the colour bit depth to 15bit, this is simply done in the fragment shader which renders the finished game render to the presentation screen quad.&lt;/p&gt;
+
+&lt;p&gt;Quick bit of maths to work out how to demonstrate conversion from 8-bit to 5-bit colours effects colour data.&lt;/p&gt;
+
+&lt;p&gt;2&lt;sup&gt;8&lt;/sup&gt;= (8 bits) 256 different colour values&lt;/p&gt;
+
+&lt;p&gt;2&lt;sup&gt;5&lt;/sup&gt;= (5 bits) 32 different colour values&lt;/p&gt;
+
+&lt;p&gt;So we need to posterise to 32 colours&lt;/p&gt;
+
+&lt;div class=&quot;language-c++ highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;vec4&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;posterize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vec4&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;colour&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gamma&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.6&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;num_colors&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;32.0&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+	&lt;span class=&quot;n&quot;&gt;vec3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;colour_out&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;colour&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rgb&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;colour_out&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pow&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;colour_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vec3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;gamma&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;colour_out&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;colour_out&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;num_colors&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;colour_out&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;floor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;colour_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;colour_out&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;colour_out&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;num_colors&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;colour_out&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pow&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;colour_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vec3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;1.0&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;gamma&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+
+	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vec4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;colour_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;1.0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;This gives us colour banding that we may want to try and cover up with dithering. The PS1 performed the dithering itself and I can’t find much info on it, so I am just going to try and make something that looks similar.&lt;/p&gt;
+
+&lt;p&gt;Dithering isn’t too complicated to get going. I implemented an ordered dithering with a 8x8 bayermatrix by following the &lt;a href=&quot;https://en.wikipedia.org/wiki/Ordered_dithering&quot;&gt;entry on Wikipedia&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;I tweaked the numbers a bit to favour a desirable look so that it isn’t too annoying and adds a bit of flavour to the render.&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/PS1Article/PS1_Style_Dithering_Example_OpenGL.jpg&quot; alt=&quot;Comparison zoomed shot comparing source, banding and dithered renders like the PS1&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;Left, standard render. Middle, Render colours down scaled to 5 bit producing banding. Right, 5 bit render with dithering applied for smoothing&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h1 id=&quot;future-work&quot;&gt;Future work&lt;/h1&gt;
+&lt;p&gt;This is where I am going to leave things for this render development pass. However, there are a couple of things I still want to look at if I get time for another pass at the rendering.&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;I am not completely happy with the dithering- the results don’t completely match those from PS1 titles.&lt;/li&gt;
+  &lt;li&gt;I have not explored emulation of CRT monitors- I think this could be fun.&lt;/li&gt;
+  &lt;li&gt;I didn’t mention loading screens or save menus in this article as I wanted to focus on rendering techniques. But I think emulation of these old-style systems is important for attaining true PS1 style. I have implemented these kinds of things and may blog about it in a follow-up post.&lt;/li&gt;
+  &lt;li&gt;I think it could be fun to add in CD reading sounds during loading screens- I will probably add this during the audio pass.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+&lt;p&gt;Attempting to recreate the PS1 style of rendering is very far-reaching and touches on many different development areas. It amuses me to see the number of techniques usually employed to make a game render become more crisp and shiny but instead used here to make the game jaggy, jitterery, muddy and inaccurate.&lt;/p&gt;
+
+&lt;p&gt;The result achieved matches my spec and this is how &lt;a href=&quot;/indiedev/update/2021/08/11/chaos-the-devil-announcement.html&quot;&gt;Chaos The Devil&lt;/a&gt; achieves PS1 rendering.&lt;/p&gt;
+
+&lt;p&gt;The technique is limiting, especially the false painters algorithm. Separation between coding and art is not really possible- art needs to be created with the rendering limitations in mind.&lt;/p&gt;
+
+&lt;h1 id=&quot;what-next&quot;&gt;What next?&lt;/h1&gt;
+
+&lt;p&gt;Development of &lt;a href=&quot;/indiedev/update/2021/08/11/chaos-the-devil-announcement.html&quot;&gt;Chaos The Devil&lt;/a&gt; is full steam ahead and I hope to have a playable demo of the first 8 levels available by the end of the year.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Watch this space.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;And if PS1 game dev is your thing, or if you have any questions, follow me on Twitter &lt;a href=&quot;http://www.twitter.com/JamesRobertHawk&quot;&gt;@JamesRobertHawk&lt;/a&gt; and continue to follow my development of &lt;a href=&quot;/indiedev/update/2021/08/11/chaos-the-devil-announcement.html&quot;&gt;Chaos The Devil&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;I am going to create more articles like this during the development of the game. I am currently working on an audio pass so if that’s your thing, drop back again soon.&lt;/p&gt;
+
+&lt;p&gt;Thanks for your time, happy coding.&lt;/p&gt;
+
+&lt;p&gt;JH&lt;/p&gt;</content><author><name></name></author><category term="indiedev" /><category term="update" /><summary type="html">This article outlines the techniques I used to emulate a PS1-style game in OpenGL. I use my own engine for this article, but if you are using one of the popular game engines you will still find the information useful.</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/Images/PlaystationRenderingArticleCover.jpg" /><media:content medium="image" url="http://localhost:4000/assets/Images/PlaystationRenderingArticleCover.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Vertical slice postmortem for Chaos the devil.</title><link href="http://localhost:4000/indiedev/update/2021/09/02/vertical-slice-postmortem.html" rel="alternate" type="text/html" title="Vertical slice postmortem for Chaos the devil." /><published>2021-09-02T11:45:19+01:00</published><updated>2021-09-02T11:45:19+01:00</updated><id>http://localhost:4000/indiedev/update/2021/09/02/vertical-slice-postmortem</id><content type="html" xml:base="http://localhost:4000/indiedev/update/2021/09/02/vertical-slice-postmortem.html">&lt;p&gt;&lt;img src=&quot;/assets/Images/Blog/VerticalSlice.jpg&quot; alt=&quot;Chaos the devil vertical slice screens&quot; class=&quot;blog-img&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;It is done, the game has reached vertical slice. The journey to this point was relatively smooth, but there were lots of design changes along the way.&lt;/p&gt;
 
@@ -42,14 +1359,26 @@
 &lt;/ol&gt;
 
 &lt;h1 id=&quot;problem-2&quot;&gt;Problem&lt;/h1&gt;
-&lt;p&gt;&lt;strong&gt;Graphics looking nice and crisp!&lt;/strong&gt;
-&lt;img src=&quot;/assets/Images/Blog/Hi-res-dev.jpg&quot; alt=&quot;Chaos the devil pre alpha hi res&quot; class=&quot;blog-img&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Graphics looking nice and crisp!&lt;/strong&gt;&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/Hi-res-dev.jpg&quot; alt=&quot;Chaos the devil pre alpha hi res&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;Graphics looking far too high resolution.&lt;/em&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
 
 &lt;p&gt;Sort of counterintuitively, it takes effort to render badly these days. Textures look interpolate pretty nicely, resolutions even without AA look pretty good, vertex position interpolation is great, depthbuffer does a great job of displaying only pixels visible to the player. This was not the case in PS1 days, so it all has to change.&lt;/p&gt;
 
 &lt;h1 id=&quot;solution-2&quot;&gt;Solution&lt;/h1&gt;
 &lt;p&gt;&lt;img src=&quot;/assets/Images/Blog/Low-res-dev.jpg&quot; alt=&quot;Chaos the devil pre alpha low res&quot; class=&quot;blog-img&quot; /&gt;
-I was always aware this was going to be the case, and I am going to write a blog post solely on the techniques I used to achieve a similar look to PS1. Again, just as before, my aim was not to match the techniques of the PS1, which would obviously give me that PS1 style, but to still use more modern techniques to fake it. I am not trying to make my life too hard, this is a big project and I need to make up some ground in places.&lt;/p&gt;</content><author><name></name></author><category term="indiedev" /><category term="update" /><summary type="html">It is done, the game has reached vertical slice. The journey to this point was relatively smooth, but there were lots of design changes along the way. I will present my journey here in the style of problems and solutions, hopefully it may be of use to somebody in a similar gamedev journey. Problem The physics look great! Using Bullet Physics[1] for my physics implementation gave great results. The player could run around with good looking momentum, kick down doors which would rebound slightly on impact and kick down walls of cubes which would dance around the screen. It was quite fun running around that little physics scene. Just one problem, physics like this doesn’t belong in a PS1 style game. Solution This was my first experience of Bullet Physics and to be honest I got a little carried away. Before I knew it I had ended up deviating quite far from the type of game I set out to do. I didn’t want to change the aim and come up with a new idea such as. ‘A modern take on the old PS1 style game!’ So there was only one thing for it, ripping out the games physics implementation. I fully backed out of simulated physics altogether and instead went back to basics just using colliders and rays for collision. Physics simulation maths now resides in the games lua scripts rather than internal to the engine using Bullet. What’s more, it’s super simple physics. As soon as this change was in the game started to feel much more akin to a 90s platformer. It also had the added bonus of being really easy to manage and tweak. Problem The character looks great A similar problem to above, however this time it was due to the character already being something I had created before the project. I always knew that the little critter was far far too complicated to be used without a very serious redesign. Solution I needed a reference point to work to here, and using the power of the internet I found a video game postmortem blog that stated the original Crash Bandicoot model was just 512 polygons[2]. I challenged myself to reduce my character to 512 polygons in Blender. This is much harder than you may think. in order to keep the character essence intact I had to deliberate over each polygon. The face was the most important part here, I needed to keep those expressive eyes, but everything else got brutally reduced in detail. Crash Bandicoot had to deal with serious hardware limitations, in the extended interview with Ars Technica, Co-creator Andy Gavin explains how such limitations lead the devs to use a vertex animation style to achieve the cartoonish animation quality. I was hoping to gain some development ground here by relying on the fact I am not running on a PS1, it just has to look PS1 like. So I had another consideration, there needed to be enough vertex info around the joints to not give terrible creasing. The last issue of texturing the character also took from Crash Bandicoot. Originally the model I used was textured using the standard approach of diffusemap, normalmap and materialmap. All these were thrown out and simple vertex colouring was used. This had a few wins: In my opinion it hit the desired aesthetic right on the nose. Creating assets that are vertex coloured rather than texturemapped is so much quicker. Problem Graphics looking nice and crisp! Sort of counterintuitively, it takes effort to render badly these days. Textures look interpolate pretty nicely, resolutions even without AA look pretty good, vertex position interpolation is great, depthbuffer does a great job of displaying only pixels visible to the player. This was not the case in PS1 days, so it all has to change. Solution I was always aware this was going to be the case, and I am going to write a blog post solely on the techniques I used to achieve a similar look to PS1. Again, just as before, my aim was not to match the techniques of the PS1, which would obviously give me that PS1 style, but to still use more modern techniques to fake it. I am not trying to make my life too hard, this is a big project and I need to make up some ground in places.</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/Images/ChaosTheDevilCover.jpg" /><media:content medium="image" url="http://localhost:4000/assets/Images/ChaosTheDevilCover.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Chaos the devil announcement</title><link href="http://localhost:4000/indiedev/update/2021/08/11/chaos-the-devil-announcement.html" rel="alternate" type="text/html" title="Chaos the devil announcement" /><published>2021-08-11T10:20:01+00:00</published><updated>2021-08-11T10:20:01+00:00</updated><id>http://localhost:4000/indiedev/update/2021/08/11/chaos-the-devil-announcement</id><content type="html" xml:base="http://localhost:4000/indiedev/update/2021/08/11/chaos-the-devil-announcement.html">&lt;h1 id=&quot;what-is-the-game&quot;&gt;What is the game?&lt;/h1&gt;
+I was always aware this was going to be the case, and I am going to write a blog post solely on the techniques I used to achieve a similar look to PS1. Again, just as before, my aim was not to match the techniques of the PS1, which would obviously give me that PS1 style, but to still use more modern techniques to fake it. I am not trying to make my life too hard, this is a big project and I need to make up some ground in places.&lt;/p&gt;</content><author><name></name></author><category term="indiedev" /><category term="update" /><summary type="html">It is done, the game has reached vertical slice. The journey to this point was relatively smooth, but there were lots of design changes along the way. I will present my journey here in the style of problems and solutions, hopefully it may be of use to somebody in a similar gamedev journey. Problem The physics look great! Using Bullet Physics[1] for my physics implementation gave great results. The player could run around with good looking momentum, kick down doors which would rebound slightly on impact and kick down walls of cubes which would dance around the screen. It was quite fun running around that little physics scene. Just one problem, physics like this doesn’t belong in a PS1 style game. Solution This was my first experience of Bullet Physics and to be honest I got a little carried away. Before I knew it I had ended up deviating quite far from the type of game I set out to do. I didn’t want to change the aim and come up with a new idea such as. ‘A modern take on the old PS1 style game!’ So there was only one thing for it, ripping out the games physics implementation. I fully backed out of simulated physics altogether and instead went back to basics just using colliders and rays for collision. Physics simulation maths now resides in the games lua scripts rather than internal to the engine using Bullet. What’s more, it’s super simple physics. As soon as this change was in the game started to feel much more akin to a 90s platformer. It also had the added bonus of being really easy to manage and tweak. Problem The character looks great A similar problem to above, however this time it was due to the character already being something I had created before the project. I always knew that the little critter was far far too complicated to be used without a very serious redesign. Solution I needed a reference point to work to here, and using the power of the internet I found a video game postmortem blog that stated the original Crash Bandicoot model was just 512 polygons[2]. I challenged myself to reduce my character to 512 polygons in Blender. This is much harder than you may think. in order to keep the character essence intact I had to deliberate over each polygon. The face was the most important part here, I needed to keep those expressive eyes, but everything else got brutally reduced in detail. Crash Bandicoot had to deal with serious hardware limitations, in the extended interview with Ars Technica, Co-creator Andy Gavin explains how such limitations lead the devs to use a vertex animation style to achieve the cartoonish animation quality. I was hoping to gain some development ground here by relying on the fact I am not running on a PS1, it just has to look PS1 like. So I had another consideration, there needed to be enough vertex info around the joints to not give terrible creasing. The last issue of texturing the character also took from Crash Bandicoot. Originally the model I used was textured using the standard approach of diffusemap, normalmap and materialmap. All these were thrown out and simple vertex colouring was used. This had a few wins: In my opinion it hit the desired aesthetic right on the nose. Creating assets that are vertex coloured rather than texturemapped is so much quicker. Problem Graphics looking nice and crisp! Graphics looking far too high resolution. Sort of counterintuitively, it takes effort to render badly these days. Textures look interpolate pretty nicely, resolutions even without AA look pretty good, vertex position interpolation is great, depthbuffer does a great job of displaying only pixels visible to the player. This was not the case in PS1 days, so it all has to change. Solution I was always aware this was going to be the case, and I am going to write a blog post solely on the techniques I used to achieve a similar look to PS1. Again, just as before, my aim was not to match the techniques of the PS1, which would obviously give me that PS1 style, but to still use more modern techniques to fake it. I am not trying to make my life too hard, this is a big project and I need to make up some ground in places.</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/Images/ChaosTheDevilCover.jpg" /><media:content medium="image" url="http://localhost:4000/assets/Images/ChaosTheDevilCover.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Chaos the devil announcement</title><link href="http://localhost:4000/indiedev/update/2021/08/11/chaos-the-devil-announcement.html" rel="alternate" type="text/html" title="Chaos the devil announcement" /><published>2021-08-11T11:20:01+01:00</published><updated>2021-08-11T11:20:01+01:00</updated><id>http://localhost:4000/indiedev/update/2021/08/11/chaos-the-devil-announcement</id><content type="html" xml:base="http://localhost:4000/indiedev/update/2021/08/11/chaos-the-devil-announcement.html">&lt;h1 id=&quot;what-is-the-game&quot;&gt;What is the game?&lt;/h1&gt;
 &lt;p&gt;&lt;strong&gt;Chaos the devil&lt;/strong&gt; will aim to capture the spirit of the old school 3D platformers that were released on the original Playstation1.&lt;/p&gt;
 
 &lt;p&gt;The game will be written alongside a new iteration of my own engine and will prove the new upgrades and features planned for the engine.&lt;/p&gt;
@@ -116,7 +1445,7 @@ Some simple marketing starts, see if there is any interest out there for a title
 Game is completely working, time to get some feedback from the public.&lt;/p&gt;
 
 &lt;p&gt;2023-2024 - Game Release v1
-Game will be released probably initially on Windows and probably in one store. I will then slowly roll out release on other platforms and stores based on game reception.&lt;/p&gt;</content><author><name></name></author><category term="indiedev" /><category term="update" /><summary type="html">What is the game? Chaos the devil will aim to capture the spirit of the old school 3D platformers that were released on the original Playstation1. The game will be written alongside a new iteration of my own engine and will prove the new upgrades and features planned for the engine. Why this game? Primarily I enjoy this kind of game, and I have fond memories of this era, but there are other considerations: 3D platformers are a lot of work! I want to create a more ambitious game in scope in order to test the new block loading capabilities of the new engine. I am but one person, I’m not about to write and 3D MMORPG, so I have to limit myself. 3D platformers of this era were not a walk in the park to develop, they took teams of people and millions of dollars to create. Naughty Dog even had the deep pockets of Universal behind their title Crash Bandicoot, so how do I think I have a chance of creating one? This comparison is not fair, these teams were creating their games on unproven tech which required novel ways to get the performance for their games to run. In 2020 things are very different, tech is mature, systems run a heck of a lot faster and I have access to hours and hours of talks from developers outlining challenges which need to be considered and how they overcame them. 3D platformers need a lot of art! True, and I’m not saying this project isn’t ambitious. Low poly models take less time and allow more leeway than modern HD. Texturing on the PS1 was also notoriously lousy, another aspect of this era which should allow me to shave some time off asset development. The graphics programming techniques required to support the assets will be much more simple than for modern titles. Previous projects ended up quickly getting frustrated with fancy graphical techniques which made it difficult to pivot quickly in development. For example, I can imagine that this title will probably use vertex lighting with one light! It is my hope that this simplicity will allow me to reach for vertical slice within a year. I am aiming to create the levels using the block system that evolved within the last iteration of my engine. This method will feel rather like the level design of old titles such as DOOM, that is, no work will be needed to be done inside 3D software packages, the levels will be created by simple level blocks which can be shaped and textured. I predict that characters will be the a large outlay of time here, for the art creation, engine support and accoumpanying tool creation. I think this is a correct focus for a 3D platformer of this era, and certainly for the player character. The good news here is that I have already developed a character which I am going to use, I am sure it will undergo changes at it is far too hi-res to hit the correct look, but it gets be off the ground running. What about the story work required? Do you remember the story of Crash Bandicoot? Probably can be summed up in a line: Some animal testing experiment goes wrong, now you are on the run? What about Spyro? Some film crew are making a documentary and then dragons get turned to stone, but not Spyro, he has to save them. Croc in this instance had probably the best setup, with to be honest a very coherent intro. Fluff balls find baby crocodile in a basket, raise it. Bad guy shows up and takes the king of the fluff balls and so Croc wants to help his friend. Basically what I am saying is that story was never too central to these games, they didn’t make much sense. Another great aspect here is that the levels didn’t feel like they needed to make sense either. There are huge drops to infinity across floating islands, lava everywhere and for some reason then everything turns to ice with no explanation in story. Killer soundtracks Not sure if it’s just me, but I still listen to the soundtracks of these games even today. They were great, in fact all the audio design in these games was top notch. Oh dear My engine already boasts a really nice audio engine capable of loads of effects and 3D, everything that will be required to support this type of title. The issue is my skill when it comes to making audio is lacking. I have created the audio for previous titles and so I can identify this is probably the area of greatest concern. I will give it a go, but I may have to outsource at least the music creation. Milestones I have a full time job in the games industry and a wife pregnant with twins at the moment so needless to say I will be working part time (very part time). The following milestones are certainly going to be flexible. I am committing to no deadlines of any kind and will not be going down the crowdfunding routes. This project is a passion project. 2021 - Vertical slice All features work, the game can be run, all menus are functional and some test levels run. Artwork is looking in keeping with PS1 era, no grey box but not at all final. 2022 - First public announcement, marketing and game design Some simple marketing starts, see if there is any interest out there for a title such as this. Doesn’t matter if not, I find preparing work for public consumption is a good way to push away some scrappy details and give a little polish to early work. Game story and design of characters begins. 2023 - Public Alpha Game is completely working, time to get some feedback from the public. 2023-2024 - Game Release v1 Game will be released probably initially on Windows and probably in one store. I will then slowly roll out release on other platforms and stores based on game reception.</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/Images/Blog/Ps1Platformers.jpg" /><media:content medium="image" url="http://localhost:4000/assets/Images/Blog/Ps1Platformers.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hawkengine development started</title><link href="http://localhost:4000/indiedev/update/2021/05/11/Hawkengine.html" rel="alternate" type="text/html" title="Hawkengine development started" /><published>2021-05-11T10:20:01+00:00</published><updated>2021-05-11T10:20:01+00:00</updated><id>http://localhost:4000/indiedev/update/2021/05/11/Hawkengine</id><content type="html" xml:base="http://localhost:4000/indiedev/update/2021/05/11/Hawkengine.html">&lt;p&gt;I am not one for small tech demos, I don’t find it too interesting to see a single rendered room with some fabric flying around.&lt;/p&gt;
+Game will be released probably initially on Windows and probably in one store. I will then slowly roll out release on other platforms and stores based on game reception.&lt;/p&gt;</content><author><name></name></author><category term="indiedev" /><category term="update" /><summary type="html">What is the game? Chaos the devil will aim to capture the spirit of the old school 3D platformers that were released on the original Playstation1. The game will be written alongside a new iteration of my own engine and will prove the new upgrades and features planned for the engine. Why this game? Primarily I enjoy this kind of game, and I have fond memories of this era, but there are other considerations: 3D platformers are a lot of work! I want to create a more ambitious game in scope in order to test the new block loading capabilities of the new engine. I am but one person, I’m not about to write and 3D MMORPG, so I have to limit myself. 3D platformers of this era were not a walk in the park to develop, they took teams of people and millions of dollars to create. Naughty Dog even had the deep pockets of Universal behind their title Crash Bandicoot, so how do I think I have a chance of creating one? This comparison is not fair, these teams were creating their games on unproven tech which required novel ways to get the performance for their games to run. In 2020 things are very different, tech is mature, systems run a heck of a lot faster and I have access to hours and hours of talks from developers outlining challenges which need to be considered and how they overcame them. 3D platformers need a lot of art! True, and I’m not saying this project isn’t ambitious. Low poly models take less time and allow more leeway than modern HD. Texturing on the PS1 was also notoriously lousy, another aspect of this era which should allow me to shave some time off asset development. The graphics programming techniques required to support the assets will be much more simple than for modern titles. Previous projects ended up quickly getting frustrated with fancy graphical techniques which made it difficult to pivot quickly in development. For example, I can imagine that this title will probably use vertex lighting with one light! It is my hope that this simplicity will allow me to reach for vertical slice within a year. I am aiming to create the levels using the block system that evolved within the last iteration of my engine. This method will feel rather like the level design of old titles such as DOOM, that is, no work will be needed to be done inside 3D software packages, the levels will be created by simple level blocks which can be shaped and textured. I predict that characters will be the a large outlay of time here, for the art creation, engine support and accoumpanying tool creation. I think this is a correct focus for a 3D platformer of this era, and certainly for the player character. The good news here is that I have already developed a character which I am going to use, I am sure it will undergo changes at it is far too hi-res to hit the correct look, but it gets be off the ground running. What about the story work required? Do you remember the story of Crash Bandicoot? Probably can be summed up in a line: Some animal testing experiment goes wrong, now you are on the run? What about Spyro? Some film crew are making a documentary and then dragons get turned to stone, but not Spyro, he has to save them. Croc in this instance had probably the best setup, with to be honest a very coherent intro. Fluff balls find baby crocodile in a basket, raise it. Bad guy shows up and takes the king of the fluff balls and so Croc wants to help his friend. Basically what I am saying is that story was never too central to these games, they didn’t make much sense. Another great aspect here is that the levels didn’t feel like they needed to make sense either. There are huge drops to infinity across floating islands, lava everywhere and for some reason then everything turns to ice with no explanation in story. Killer soundtracks Not sure if it’s just me, but I still listen to the soundtracks of these games even today. They were great, in fact all the audio design in these games was top notch. Oh dear My engine already boasts a really nice audio engine capable of loads of effects and 3D, everything that will be required to support this type of title. The issue is my skill when it comes to making audio is lacking. I have created the audio for previous titles and so I can identify this is probably the area of greatest concern. I will give it a go, but I may have to outsource at least the music creation. Milestones I have a full time job in the games industry and a wife pregnant with twins at the moment so needless to say I will be working part time (very part time). The following milestones are certainly going to be flexible. I am committing to no deadlines of any kind and will not be going down the crowdfunding routes. This project is a passion project. 2021 - Vertical slice All features work, the game can be run, all menus are functional and some test levels run. Artwork is looking in keeping with PS1 era, no grey box but not at all final. 2022 - First public announcement, marketing and game design Some simple marketing starts, see if there is any interest out there for a title such as this. Doesn’t matter if not, I find preparing work for public consumption is a good way to push away some scrappy details and give a little polish to early work. Game story and design of characters begins. 2023 - Public Alpha Game is completely working, time to get some feedback from the public. 2023-2024 - Game Release v1 Game will be released probably initially on Windows and probably in one store. I will then slowly roll out release on other platforms and stores based on game reception.</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/Images/Blog/Ps1Platformers.jpg" /><media:content medium="image" url="http://localhost:4000/assets/Images/Blog/Ps1Platformers.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hawkengine development started</title><link href="http://localhost:4000/indiedev/update/2021/05/11/Hawkengine.html" rel="alternate" type="text/html" title="Hawkengine development started" /><published>2021-05-11T11:20:01+01:00</published><updated>2021-05-11T11:20:01+01:00</updated><id>http://localhost:4000/indiedev/update/2021/05/11/Hawkengine</id><content type="html" xml:base="http://localhost:4000/indiedev/update/2021/05/11/Hawkengine.html">&lt;p&gt;I am not one for small tech demos, I don’t find it too interesting to see a single rendered room with some fabric flying around.&lt;/p&gt;
 
 &lt;p&gt;When I have created some engine tech, I like to design a large project around it, which can take sometimes years. In that time I create a huge list of things I wish were different in the engine, things that started to break with scope, things that held me back or were overly complex. What’s more, in that time tech moves on, new shiny stuff comes out, like everyone I want to play with shiny things, but while in a project I just put the idea on my engine wish list and stick to my current project, don’t want to end up like &lt;a href=&quot;https://www.youtube.com/watch?v=CASKDJNiLXA&quot;&gt;Duke Nukem Forever&lt;/a&gt;!&lt;/p&gt;
 
