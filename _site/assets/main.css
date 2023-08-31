@@ -112,7 +112,11 @@ pre > code { border: 0; padding-right: 0; padding-left: 0; }
 
 #wrapperpage-footer { grid-area: contentfooter; }
 
-#mailinglistSub { text-align: center; }
+#mailinglistSub { height: 135px; width: 100%; }
+
+#generalEnquiry { height: 535; width: 100%; }
+
+#audioYoutubeClip { height: 50; width: 100%; }
 
 /** Clearfix */
 .footer-col-wrapper:after, .wrapper:after { content: ""; display: table; clear: both; }

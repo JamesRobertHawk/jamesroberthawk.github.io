@@ -17,9 +17,7 @@ In this article I discuss my journey into an unknown world to me, the world of g
 
 It's important to note that I am obviously not an expert, not even close, this is a guide written by the opposite of an expert; a diary of how a music novice went about creating songs and ended up with something passable like this. 
 
-<div class="post-content-main">
-<iframe width="560" height="50" src="https://www.youtube.com/embed/yKTJ1Ua3Caw?si=ObJ0YTtjdEPbPe5B" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="1"></iframe>
-</div>
+<iframe id="audioYoutubeClip" width="560" height="50" src="https://www.youtube.com/embed/yKTJ1Ua3Caw?si=ObJ0YTtjdEPbPe5B" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="1"></iframe>
 
 My hope is that my experience can help others in the same boat.
 
