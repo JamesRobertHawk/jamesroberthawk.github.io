@@ -3,8 +3,8 @@ layout: pagewcolumns
 title: ChaosTheDevil
 permalink: /ChaosTheDevil/
 image: /assets/Images/ChaosTheDevilCover.jpg
-contenttitle1: "Retro 3D Platformer"
-content1:  Jump, smash and grab your way through 31 twisting levels. Comic design, fun action, and old school design at it's best.
+contenttitle1: "From scratch"
+content1: Built atop custom HawkEngine and designed with specially developed tooling. Development of Chaos the Devil is designed to follow retro gamedev processes to capture the real feel of the old 3D platformer games of the PS1 era.
 contentimage1: /assets/Images/ChaosScreen2.jpg
 contenttitle2: "Modern Approach"
 content2: Relive the fun of stripped back retro style in this homage to the greats. Classic controls, choice of low or high resolution graphics and all original content. Chaos awaits!
