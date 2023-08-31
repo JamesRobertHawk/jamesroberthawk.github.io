@@ -33,10 +33,6 @@ I decided to take some time out to focus on producing some marketing and concept
 
 Here I document my experience.
 
-| ![Affine warping effect on polygons with offscreen vertices](/assets/Images/Blog/SteamCapsuleArticle/ChaosTheDevilCover.jpg){:class="blog-img"} |
-|:--:|
-| *Marketing material I had been using to this point. Rendered in game screenshot, apparently a big no no.* |
-
 # Contents
 1. [Why not commission one?](#Why-not-commission-one?)
 2. [Why not use AI?](#Why-not-use-AI?)

@@ -152,18 +152,14 @@ The first songs I attempted followed a very stab in the dark style. I would rand
 
 By felt right, I noticed that when listening, my mind would conjure certain expectations for what it thought the next notes should be. It probably sounds a bit strange, but I relied heavily on this feeling, and you may be just as surprised as I was that it's something that you will feel too.
 
-<div class="post-content-main">
-<iframe width="560" height="50" src="https://www.youtube.com/embed/8XCGv2vL7Ao?si=2WDQNmgrXmUkM9jK" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="1"></iframe>
-</div>
+<iframe id="audioYoutubeClip" width="560" height="50" src="https://www.youtube.com/embed/8XCGv2vL7Ao?si=2WDQNmgrXmUkM9jK" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="1"></iframe>
 
 ## Planned approach
 While making my daily trip to get a morning coffee, I hummed little tunes into my phone. Tunes that reminded me of PS1 platformer styles.
 
 I then listen back, and attempted to copy the notes into LMMS blocks. This was far harder than the random approach. Matching the tempo and tone of my humming proved to be much more time consuming and frustrating. However, the approach did produce some good songs.
 
-<div class="post-content-main">
-<iframe width="560" height="50" src="https://www.youtube.com/embed/V9x5fGHghHY?si=8fZRoriQ49BogQ2S" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="1"></iframe>
-</div>
+<iframe id="audioYoutubeClip" width="560" height="50" src="https://www.youtube.com/embed/V9x5fGHghHY?si=8fZRoriQ49BogQ2S" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="1"></iframe>
 
 ## Scale approach
 I was still watching LMMS tutorials during this time and a very useful feature came up. LMMS allows you to select a scale you want for the song. This highlighted all notes in that scale. 
@@ -174,9 +170,7 @@ For example, minor scale notes gave automatic uneasy sounds. Previously, I was j
 |:--:|
 | Select the scale from the drop down in the top tool bar, then right click on the key you want to base the scale off, here C, and all notes in that scale will be highlighted. |
 
-<div class="post-content-main">
-<iframe width="560" height="50" src="https://www.youtube.com/embed/ESVqZK9Rg2s?si=-Fz5Ickzj_9bQArZ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="1"></iframe>
-</div>
+<iframe id="audioYoutubeClip" width="560" height="50" src="https://www.youtube.com/embed/ESVqZK9Rg2s?si=-Fz5Ickzj_9bQArZ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="1"></iframe>
 
 ## Chord progression approach
 I expanded to more music generic tutorials and not just LMMS focussed. While most of it was way over my head, one easy addition to my toolkit was using correct chord progression.
@@ -187,18 +181,14 @@ By following a simple technique outlined in this video LINK my basslines really 
 |:--:|
 | Chords added using the chord dropdown from the tool menu. Chord selection dictated by highlighted scale in key of C, followed by applying the Major-Minor-Minor-Major-Major-Minor-Diminished |
 
-<div class="post-content-main">
-<iframe width="560" height="50" src="https://www.youtube.com/embed/mJGJ7MOf-M4?si=MgMNTuspOgecv3r2" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="1"></iframe>
-</div>
+<iframe id="audioYoutubeClip" width="560" height="50" src="https://www.youtube.com/embed/mJGJ7MOf-M4?si=MgMNTuspOgecv3r2" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="1"></iframe>
 
 ## Which instrument to start with
 A great way I found to keep each song really different was to select a different instrument to start with each time.
 
 The effect was massive. Songs I started with choir instruments produced floaty songs, songs which I started with acoustic drums got an upbeat intense feel.
 
-<div class="post-content-main">
-<iframe width="560" height="50" src="https://www.youtube.com/embed/5mOOWaEM254?si=gZapZs9R6ztoxMFY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="1"></iframe>
-</div>
+<iframe id="audioYoutubeClip" width="560" height="50" src="https://www.youtube.com/embed/5mOOWaEM254?si=gZapZs9R6ztoxMFY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="1"></iframe>
 
 # Conclusion
 I successfully created 20 songs in 20 days.
@@ -215,6 +205,4 @@ Ultimately, I found the whole experience enjoyable and rewarding, and feel my un
 
 The songs I made are a first pass. I expect to improve them with time.
 
-<div class="post-content-main">
-<iframe width="560" height="50" src="https://www.youtube.com/embed/9hdG3dyJAfU?si=eBDfEp9I2nY9XrrG" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="1"></iframe>
-</div>
+<iframe id="audioPlaylistYoutubeClip" width="560" height="400" src="https://www.youtube.com/embed/ideoseries?si=i2IudsLbBoPckncL&amp;list=PLFTlKmNZOixwUtkK0A8Y74_TmUwPX5GQB" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="1"></iframe>

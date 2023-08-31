@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-08-30T14:05:17+01:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">James Hawk</title><subtitle>Engine Programmer at CCP Games, working on EVE Online. Indie developer working on HawkEngine and PS1 style 3D platformer. Unity 3D asset creator. Interesting guy.</subtitle><entry><title type="html">Tips for optimising Lua</title><link href="http://localhost:4000/indiedev/update/2023/06/08/OptimisingLua.html" rel="alternate" type="text/html" title="Tips for optimising Lua" /><published>2023-06-08T11:20:01+01:00</published><updated>2023-06-08T11:20:01+01:00</updated><id>http://localhost:4000/indiedev/update/2023/06/08/OptimisingLua</id><content type="html" xml:base="http://localhost:4000/indiedev/update/2023/06/08/OptimisingLua.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-08-31T09:57:15+01:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">James Hawk</title><subtitle>Engine Programmer at CCP Games, working on EVE Online. Indie developer working on HawkEngine and PS1 style 3D platformer. Unity 3D asset creator.</subtitle><entry><title type="html">Tips for optimising Lua</title><link href="http://localhost:4000/indiedev/update/2023/06/08/OptimisingLua.html" rel="alternate" type="text/html" title="Tips for optimising Lua" /><published>2023-06-08T11:20:01+01:00</published><updated>2023-06-08T11:20:01+01:00</updated><id>http://localhost:4000/indiedev/update/2023/06/08/OptimisingLua</id><content type="html" xml:base="http://localhost:4000/indiedev/update/2023/06/08/OptimisingLua.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
 &lt;p&gt;I took the decision to switch my scripting engine to lua from python. This was due to a few reasons outside the scope of this article, however the biggest draw for me was the simplicity of the lua integration.&lt;/p&gt;
 
 &lt;p&gt;As I didn’t know the full requirements for the scripting engine initially, I just studied enough to replace my scripting engine.&lt;/p&gt;
@@ -224,19 +224,6 @@ First there is a lookup in the global table for ‘components’ then there is a
 
 &lt;p&gt;Here I document my experience.&lt;/p&gt;
 
-&lt;table&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/assets/Images/Blog/SteamCapsuleArticle/ChaosTheDevilCover.jpg&quot; alt=&quot;Affine warping effect on polygons with offscreen vertices&quot; class=&quot;blog-img&quot; /&gt;&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td style=&quot;text-align: center&quot;&gt;&lt;em&gt;Marketing material I had been using to this point. Rendered in game screenshot, apparently a big no no.&lt;/em&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-
 &lt;h1 id=&quot;contents&quot;&gt;Contents&lt;/h1&gt;
 &lt;ol&gt;
   &lt;li&gt;&lt;a href=&quot;#Why-not-commission-one?&quot;&gt;Why not commission one?&lt;/a&gt;&lt;/li&gt;
@@ -377,7 +364,7 @@ First there is a lookup in the global table for ‘components’ then there is a
 
 &lt;p&gt;It’s important to note that I am obviously not an expert, not even close, this is a guide written by the opposite of an expert; a diary of how a music novice went about creating songs and ended up with something passable like this.&lt;/p&gt;
 
-&lt;iframe id=&quot;audioYoutubeClip&quot; width=&quot;560&quot; height=&quot;50&quot; src=&quot;https://www.youtube.com/embed/vfQB4kRcDxo?si=WCGCxLHvRFBxPXZ9&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&quot; allowfullscreen=&quot;1&quot;&gt;&lt;/iframe&gt;
+&lt;iframe id=&quot;audioYoutubeClip&quot; width=&quot;560&quot; height=&quot;50&quot; src=&quot;https://www.youtube.com/embed/yKTJ1Ua3Caw?si=ObJ0YTtjdEPbPe5B&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&quot; allowfullscreen=&quot;1&quot;&gt;&lt;/iframe&gt;
 
 &lt;p&gt;My hope is that my experience can help others in the same boat.&lt;/p&gt;
 
@@ -485,7 +472,7 @@ First there is a lookup in the global table for ‘components’ then there is a
 &lt;p&gt;LMMS is a bit like the DanceEJay, a place blocks style production. One difference, you also write the blocks. Good on the one hand that the songs made will actually be original songs, but bad as I had no idea how to do that.&lt;/p&gt;
 
 &lt;h2 id=&quot;understanding-the-lmms-interface&quot;&gt;Understanding the LMMS Interface&lt;/h2&gt;
-&lt;p&gt;&lt;img src=&quot;/assets/Images/Blog/MusicArticle/LMMSInterface.jpg&quot; alt=&quot;Posterisation example changing source colours vs colour pallette&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/Images/Blog/MusicArticle/lmmsInterface.jpg&quot; alt=&quot;Posterisation example changing source colours vs colour pallette&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;I found a great &lt;a href=&quot;https://www.youtube.com/watch?v=TrMTlpeSw8Y&amp;amp;list=PLqazFFzUAPc4K1To5JTtR3cskcdRifM1M&quot;&gt;tutorial series&lt;/a&gt; I recommend which gives a great overview of the LMMS interface.&lt;/p&gt;
 
@@ -531,10 +518,14 @@ First there is a lookup in the global table for ‘components’ then there is a
 
 &lt;p&gt;By felt right, I noticed that when listening, my mind would conjure certain expectations for what it thought the next notes should be. It probably sounds a bit strange, but I relied heavily on this feeling, and you may be just as surprised as I was that it’s something that you will feel too.&lt;/p&gt;
 
+&lt;iframe id=&quot;audioYoutubeClip&quot; width=&quot;560&quot; height=&quot;50&quot; src=&quot;https://www.youtube.com/embed/8XCGv2vL7Ao?si=2WDQNmgrXmUkM9jK&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&quot; allowfullscreen=&quot;1&quot;&gt;&lt;/iframe&gt;
+
 &lt;h2 id=&quot;planned-approach&quot;&gt;Planned approach&lt;/h2&gt;
 &lt;p&gt;While making my daily trip to get a morning coffee, I hummed little tunes into my phone. Tunes that reminded me of PS1 platformer styles.&lt;/p&gt;
 
 &lt;p&gt;I then listen back, and attempted to copy the notes into LMMS blocks. This was far harder than the random approach. Matching the tempo and tone of my humming proved to be much more time consuming and frustrating. However, the approach did produce some good songs.&lt;/p&gt;
+
+&lt;iframe id=&quot;audioYoutubeClip&quot; width=&quot;560&quot; height=&quot;50&quot; src=&quot;https://www.youtube.com/embed/V9x5fGHghHY?si=8fZRoriQ49BogQ2S&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&quot; allowfullscreen=&quot;1&quot;&gt;&lt;/iframe&gt;
 
 &lt;h2 id=&quot;scale-approach&quot;&gt;Scale approach&lt;/h2&gt;
 &lt;p&gt;I was still watching LMMS tutorials during this time and a very useful feature came up. LMMS allows you to select a scale you want for the song. This highlighted all notes in that scale.&lt;/p&gt;
@@ -554,6 +545,8 @@ First there is a lookup in the global table for ‘components’ then there is a
   &lt;/tbody&gt;
 &lt;/table&gt;
 
+&lt;iframe id=&quot;audioYoutubeClip&quot; width=&quot;560&quot; height=&quot;50&quot; src=&quot;https://www.youtube.com/embed/ESVqZK9Rg2s?si=-Fz5Ickzj_9bQArZ&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&quot; allowfullscreen=&quot;1&quot;&gt;&lt;/iframe&gt;
+
 &lt;h2 id=&quot;chord-progression-approach&quot;&gt;Chord progression approach&lt;/h2&gt;
 &lt;p&gt;I expanded to more music generic tutorials and not just LMMS focussed. While most of it was way over my head, one easy addition to my toolkit was using correct chord progression.&lt;/p&gt;
 
@@ -572,10 +565,14 @@ First there is a lookup in the global table for ‘components’ then there is a
   &lt;/tbody&gt;
 &lt;/table&gt;
 
+&lt;iframe id=&quot;audioYoutubeClip&quot; width=&quot;560&quot; height=&quot;50&quot; src=&quot;https://www.youtube.com/embed/mJGJ7MOf-M4?si=MgMNTuspOgecv3r2&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&quot; allowfullscreen=&quot;1&quot;&gt;&lt;/iframe&gt;
+
 &lt;h2 id=&quot;which-instrument-to-start-with&quot;&gt;Which instrument to start with&lt;/h2&gt;
 &lt;p&gt;A great way I found to keep each song really different was to select a different instrument to start with each time.&lt;/p&gt;
 
 &lt;p&gt;The effect was massive. Songs I started with choir instruments produced floaty songs, songs which I started with acoustic drums got an upbeat intense feel.&lt;/p&gt;
+
+&lt;iframe id=&quot;audioYoutubeClip&quot; width=&quot;560&quot; height=&quot;50&quot; src=&quot;https://www.youtube.com/embed/5mOOWaEM254?si=gZapZs9R6ztoxMFY&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&quot; allowfullscreen=&quot;1&quot;&gt;&lt;/iframe&gt;
 
 &lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
 &lt;p&gt;I successfully created 20 songs in 20 days.&lt;/p&gt;
@@ -590,7 +587,9 @@ First there is a lookup in the global table for ‘components’ then there is a
 
 &lt;p&gt;Ultimately, I found the whole experience enjoyable and rewarding, and feel my understanding of gamedev strengthened greatly.&lt;/p&gt;
 
-&lt;p&gt;The songs I made are a first pass. I expect to improve them with time.&lt;/p&gt;</content><author><name></name></author><category term="indiedev" /><category term="update" /><summary type="html">Introduction Game music plays a huge role in generating the correct feel for a game. The best soundtracks help transport the player through the game world.</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/Images/Blog/Lmms.jpg" /><media:content medium="image" url="http://localhost:4000/assets/Images/Blog/Lmms.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Rendering in Playstation 1 style in OpenGL</title><link href="http://localhost:4000/indiedev/update/2022/06/02/rendering-ps1.html" rel="alternate" type="text/html" title="Rendering in Playstation 1 style in OpenGL" /><published>2022-06-02T19:45:19+01:00</published><updated>2022-06-02T19:45:19+01:00</updated><id>http://localhost:4000/indiedev/update/2022/06/02/rendering-ps1</id><content type="html" xml:base="http://localhost:4000/indiedev/update/2022/06/02/rendering-ps1.html">&lt;p&gt;This article outlines the techniques I used to emulate a PS1-style game in OpenGL. I use my own engine for this article, but if you are using one of the popular game engines you will still find the information useful.&lt;/p&gt;
+&lt;p&gt;The songs I made are a first pass. I expect to improve them with time.&lt;/p&gt;
+
+&lt;iframe id=&quot;audioPlaylistYoutubeClip&quot; width=&quot;560&quot; height=&quot;400&quot; src=&quot;https://www.youtube.com/embed/ideoseries?si=i2IudsLbBoPckncL&amp;amp;list=PLFTlKmNZOixwUtkK0A8Y74_TmUwPX5GQB&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&quot; allowfullscreen=&quot;1&quot;&gt;&lt;/iframe&gt;</content><author><name></name></author><category term="indiedev" /><category term="update" /><summary type="html">Introduction Game music plays a huge role in generating the correct feel for a game. The best soundtracks help transport the player through the game world.</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/Images/Blog/Lmms.jpg" /><media:content medium="image" url="http://localhost:4000/assets/Images/Blog/Lmms.jpg" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Rendering in Playstation 1 style in OpenGL</title><link href="http://localhost:4000/indiedev/update/2022/06/02/rendering-ps1.html" rel="alternate" type="text/html" title="Rendering in Playstation 1 style in OpenGL" /><published>2022-06-02T19:45:19+01:00</published><updated>2022-06-02T19:45:19+01:00</updated><id>http://localhost:4000/indiedev/update/2022/06/02/rendering-ps1</id><content type="html" xml:base="http://localhost:4000/indiedev/update/2022/06/02/rendering-ps1.html">&lt;p&gt;This article outlines the techniques I used to emulate a PS1-style game in OpenGL. I use my own engine for this article, but if you are using one of the popular game engines you will still find the information useful.&lt;/p&gt;
 
 &lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
 
