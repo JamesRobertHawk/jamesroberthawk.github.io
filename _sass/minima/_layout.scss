@@ -282,18 +282,40 @@
 
 
 .page-button {
-  background-color: $tagline-color;
+  background-color: $grey-color-light;
+  text-align: center;
+}
+
+.page-button:hover {
+  background-color:$grey-color-lighter;
   text-align: center;
 }
 
 .page-button-link {
-  color: white;
+  color: black;
   font-weight: bold;
 }
 
-.page-button-link:hover {
-  color: white;
+.page-button-link:link {
+  text-decoration: none;
+  color: black;
 }
+.page-button-link:visited {
+  text-decoration: none;
+  color: black;
+}
+
+.page-button-link:hover {
+  text-decoration: none;
+  color: black;
+}
+
+.page-button-link:active {
+  text-decoration: none;
+  color: black;
+}
+
+
 
 .post-content-main {
   text-align: center;
@@ -311,8 +333,40 @@
   padding: 15px;
 }
 
+.homeFeaturedPost {
+  background-color:$grey-color-light;
+  padding: 15px;
+}
+
+.homeFeaturedPost:hover {
+  background-color:$grey-color-lighter;
+}
+
+
+
+.cardlink:link {
+  text-decoration: none;
+  color: black;
+}
+.cardlink:visited {
+  text-decoration: none;
+  color: black;
+}
+.cardlink:hover {
+  text-decoration: none;
+  color: black;
+}
+.cardlink:active {
+  text-decoration: none;
+  color: black;
+}
+
 .blogpage-entry {
   padding-bottom: 50px;
+}
+
+.blogpage-entry:hover {
+  background-color:$grey-color-lighter;
 }
 
 .blogpage-entry-title {

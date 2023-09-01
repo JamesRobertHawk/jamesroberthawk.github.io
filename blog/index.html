@@ -1,12 +1,12 @@
 ---
-layout: home
+layout: default
 image: /assets/Images/VoxelCityCover.jpg
 ---
 
 <!-- This loops through the paginated posts -->
 {% for post in paginator.posts %}
   <div class="blogpage-entry">
-    <a href="{{ post.url }}">
+    <a class="cardlink" href="{{ post.url }}">
       <div class="blogpage-entry-title">
         <img src="{{- post.image | relative_url -}}" alt="" class="blog-image">
         <h1>{{ post.title }}</h1>
@@ -15,10 +15,11 @@ image: /assets/Images/VoxelCityCover.jpg
         </p>
         <br>
       </div>
-    </a>
+    
     <div class="blog-extract-content">
       {{ post.content | strip_html | truncatewords: 50 }}
     </div>
+    </a>
   </div>
   <hr>
 {% endfor %}

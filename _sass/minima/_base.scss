@@ -352,20 +352,42 @@ pre {
   padding: 10px;
   text-align: justify;
 }
+#wrapperhomepage-contentleft1 {
+  grid-area: contentleft1;
+  padding: 10px;
+  margin: 10px;
+
+}
 #wrapperpage-contentright1 {
   grid-area: contentright1;
   padding: 10px;
   text-align: justify;
+}
+#wrapperhomepage-contentright1 {
+  grid-area: contentright1;
+  padding: 10px;
+  margin: 10px;
+
 }
 #wrapperpage-contentleft2 {
   grid-area: contentleft2;
   padding: 10px;
   text-align: justify;
 }
+#wrapperhomepage-contentleft2 {
+  grid-area: contentleft2;
+  padding: 10px;
+  margin: 10px;
+}
 #wrapperpage-contentright2 {
   grid-area: contentright2;
   padding: 10px;
   text-align: justify;
+}
+#wrapperhomepage-contentright2 {
+  grid-area: contentright2;
+  padding: 10px;
+  margin: 10px;
 }
 #wrapperpage-contentleft3 {
   grid-area: contentleft3;

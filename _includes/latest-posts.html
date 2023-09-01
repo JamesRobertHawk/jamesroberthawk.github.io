@@ -1,25 +1,25 @@
 {%- if site.posts.size > 0 -%}
-  <h2 class="post-list-heading">{{ page.list_title | default: "Latest blog posts" }}</h2>
+  <h2 class="post-list-heading">{{ page.list_title | default: "Latest" }}</h2>
   <ul class="post-list">
 
 
     {% for i in (0..1) %}
     <li>
-      
-      {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
-      
-      <h3>
-        <a class="post-link" href="{{ site.posts[i].url | relative_url }}">
-          {{ site.posts[i].title | escape }}
-        </a>
-      </h3>
-      <span class="post-meta">{{ site.posts[i].date | date: date_format }}</span>
-      <img src="{{- site.posts[i].image | relative_url -}}" alt="" class="">
-      {%- if site.show_excerpts -%}
-        {{ site.posts[i].excerpt }}
-      {%- endif -%}
+      <a class="post-link" href="{{ site.posts[i].url | relative_url }}">
+        {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
+        
+        <h3>
+          
+            {{ site.posts[i].title | escape }}
+          
+        </h3>
+        <span class="post-meta">{{ site.posts[i].date | date: date_format }}</span>
+        <img src="{{- site.posts[i].image | relative_url -}}" alt="" class="">
+        {%- if site.show_excerpts -%}
+          {{ site.posts[i].excerpt }}
+        {%- endif -%}
 
-      
+      </a>
     </li>
     {%- endfor -%}
 

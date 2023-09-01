@@ -90,11 +90,19 @@ pre > code { border: 0; padding-right: 0; padding-left: 0; }
 
 #wrapperpage-contentleft1 { grid-area: contentleft1; padding: 10px; text-align: justify; }
 
+#wrapperhomepage-contentleft1 { grid-area: contentleft1; padding: 10px; margin: 10px; }
+
 #wrapperpage-contentright1 { grid-area: contentright1; padding: 10px; text-align: justify; }
+
+#wrapperhomepage-contentright1 { grid-area: contentright1; padding: 10px; margin: 10px; }
 
 #wrapperpage-contentleft2 { grid-area: contentleft2; padding: 10px; text-align: justify; }
 
+#wrapperhomepage-contentleft2 { grid-area: contentleft2; padding: 10px; margin: 10px; }
+
 #wrapperpage-contentright2 { grid-area: contentright2; padding: 10px; text-align: justify; }
+
+#wrapperhomepage-contentright2 { grid-area: contentright2; padding: 10px; margin: 10px; }
 
 #wrapperpage-contentleft3 { grid-area: contentleft3; padding: 10px; text-align: justify; }
 
@@ -117,11 +125,8 @@ pre > code { border: 0; padding-right: 0; padding-left: 0; }
 #generalEnquiry { height: 535; width: 100%; }
 
 #audioYoutubeClip { height: 50; width: 100%; }
-<<<<<<< HEAD
-=======
 
 #audioPlaylistYoutubeClip { height: 200; width: 100%; }
->>>>>>> 1323c79ed0c9e5b72f51b13ecefaeca4afc56119
 
 /** Clearfix */
 .footer-col-wrapper:after, .wrapper:after { content: ""; display: table; clear: both; }
@@ -224,11 +229,19 @@ hr { border-color: #e8e8e8; }
 
 .blog-image { width: 95px; height: 95px; object-fit: cover; float: left; }
 
-.page-button { background-color: #555555; text-align: center; }
+.page-button { background-color: #e8e8e8; text-align: center; }
 
-.page-button-link { color: white; font-weight: bold; }
+.page-button:hover { background-color: whitesmoke; text-align: center; }
 
-.page-button-link:hover { color: white; }
+.page-button-link { color: black; font-weight: bold; }
+
+.page-button-link:link { text-decoration: none; color: black; }
+
+.page-button-link:visited { text-decoration: none; color: black; }
+
+.page-button-link:hover { text-decoration: none; color: black; }
+
+.page-button-link:active { text-decoration: none; color: black; }
 
 .post-content-main { text-align: center; }
 
@@ -236,7 +249,21 @@ hr { border-color: #e8e8e8; }
 
 .pagination { text-align: center; padding: 15px; }
 
+.homeFeaturedPost { background-color: #e8e8e8; padding: 15px; }
+
+.homeFeaturedPost:hover { background-color: whitesmoke; }
+
+.cardlink:link { text-decoration: none; color: black; }
+
+.cardlink:visited { text-decoration: none; color: black; }
+
+.cardlink:hover { text-decoration: none; color: black; }
+
+.cardlink:active { text-decoration: none; color: black; }
+
 .blogpage-entry { padding-bottom: 50px; }
+
+.blogpage-entry:hover { background-color: whitesmoke; }
 
 .blogpage-entry-title { background-color: #e8e8e8; }
 

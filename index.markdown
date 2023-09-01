@@ -4,7 +4,11 @@
 
 layout: home
 title: index
-featuredpost: "Vertical slice postmortem for Chaos the devil."
+featuredpost: "Hawkengine development started"
+featuredprogrammingpost: "Vertical slice postmortem for Chaos the devil."
+featuredgraphicspost: "Rendering in Playstation 1 style in OpenGL"
+featuredartpost: "Creating a Steam Capsule"
+featuredaudiopost: "How to make music for your indie game"
 ---
 # Hello there!
 

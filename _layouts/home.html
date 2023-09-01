@@ -1,42 +1,131 @@
 ---
-layout: default
+layout: defaultwcolumns
 ---
 
-<div class="home">
-
   
-
-  {{ content }}
-
-
-
+<div id="wrapperpage-contentmain">
+  
   <iframe id="mailinglistSub" src="https://backend.hawkjames.com/subscribeToMailinglist" title="Join mailinglist" width="600" height="135" frameBorder="0" ></iframe>  
 
-  
-  
-  {% if page.featuredpost %}
-  <hr>
-    <h1>Featured Blog Post</h1>
-    {% for post in site.posts %}
-      {% if post.title == page.featuredpost %}
-        <div class="blogpage-entry">
-          <img src="{{- post.image | relative_url -}}" alt="" class="blog-image">
-          <h1><a href="{{ post.url }}">{{ post.title }}</a></h1>
-          <p class="author">
-            <span class="date">{{ post.date }}</span>
-          </p>
-          <div class="blog-extract-content">
-            {{ post.content | strip_html | truncatewords: 50 }}
-          </div>
-        </div>
-      {% endif %}
-    {% endfor %}
-  {% endif %}
-
-
-
-
-  
-  
-
+  <h1>Featured Posts</h1>
 </div>
+
+{% if page.featuredprogrammingpost %}
+  {% for post in site.posts %}
+      {% if post.title == page.featuredprogrammingpost %}
+        
+          <div class="homeFeaturedPost" id="wrapperhomepage-contentleft1">
+            <a class="cardlink" href="{{ post.url }}">
+            <div class="column-contents">
+              <h1>Programming</h1>
+              <div class="">
+                <h2>{{ post.title }}</h2>
+                <p class="author">
+                  <span class="date">{{ post.date }}</span>
+                </p>
+                <img src="{{- post.image | relative_url -}}" alt="" class="">
+                
+                <div class="blogpage-entry">
+                
+                  <div class="blog-extract-content">
+                    {{ post.content | strip_html | truncatewords: 50 }}
+                  </div>
+                </div>
+              </div>
+          </div>
+        </a>
+        </div>
+      
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% if page.featuredgraphicspost %}
+  {% for post in site.posts %}
+      {% if post.title == page.featuredgraphicspost %}
+        
+          <div class="homeFeaturedPost" id="wrapperhomepage-contentright1">
+            <a class="cardlink" href="{{ post.url }}">
+            <div class="column-contents">
+              <h1>Graphics</h1>
+              <div class="">
+                <h2>{{ post.title }}</h2>
+                <p class="author">
+                  <span class="date">{{ post.date }}</span>
+                </p>
+                <img src="{{- post.image | relative_url -}}" alt="" class="">
+                
+                <div class="blogpage-entry">
+                
+                  <div class="blog-extract-content">
+                    {{ post.content | strip_html | truncatewords: 50 }}
+                  </div>
+                </div>
+              </div>
+          </div>
+        </a>
+        </div>
+      
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% if page.featuredartpost %}
+  {% for post in site.posts %}
+      {% if post.title == page.featuredartpost %}
+        
+          <div class="homeFeaturedPost" id="wrapperhomepage-contentleft2">
+            <a class="cardlink" href="{{ post.url }}">
+            <div class="column-contents">
+              <h1>Art</h1>
+              <div class="">
+                <h2>{{ post.title }}</h2>
+                <p class="author">
+                  <span class="date">{{ post.date }}</span>
+                </p>
+                <img src="{{- post.image | relative_url -}}" alt="" class="">
+                
+                <div class="blogpage-entry">
+                
+                  <div class="blog-extract-content">
+                    {{ post.content | strip_html | truncatewords: 50 }}
+                  </div>
+                </div>
+              </div>
+          </div>
+        </a>
+        </div>
+      
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% if page.featuredaudiopost %}
+  {% for post in site.posts %}
+      {% if post.title == page.featuredaudiopost %}
+        
+          <div class="homeFeaturedPost" id="wrapperhomepage-contentright2">
+            <a class="cardlink" href="{{ post.url }}">
+            <div class="column-contents">
+              <h1>Audio</h1>
+              <div class="">
+                <h2>{{ post.title }}</h2>
+                <p class="author">
+                  <span class="date">{{ post.date }}</span>
+                </p>
+                <img src="{{- post.image | relative_url -}}" alt="" class="">
+                
+                <div class="blogpage-entry">
+                
+                  <div class="blog-extract-content">
+                    {{ post.content | strip_html | truncatewords: 50 }}
+                  </div>
+                </div>
+              </div>
+          </div>
+        </a>
+        </div>
+      
+    {% endif %}
+  {% endfor %}
+{% endif %}
