@@ -345,12 +345,10 @@ pre {
 #wrapperpage-contentmain {
   grid-area: contentmain;
   padding: 10px;
-  text-align: justify;
 }
 #wrapperpage-contentleft1 {
   grid-area: contentleft1;
   padding: 10px;
-  text-align: justify;
 }
 #wrapperhomepage-contentleft1 {
   grid-area: contentleft1;
@@ -361,7 +359,6 @@ pre {
 #wrapperpage-contentright1 {
   grid-area: contentright1;
   padding: 10px;
-  text-align: justify;
 }
 #wrapperhomepage-contentright1 {
   grid-area: contentright1;
@@ -372,7 +369,6 @@ pre {
 #wrapperpage-contentleft2 {
   grid-area: contentleft2;
   padding: 10px;
-  text-align: justify;
 }
 #wrapperhomepage-contentleft2 {
   grid-area: contentleft2;
@@ -382,7 +378,6 @@ pre {
 #wrapperpage-contentright2 {
   grid-area: contentright2;
   padding: 10px;
-  text-align: justify;
 }
 #wrapperhomepage-contentright2 {
   grid-area: contentright2;
@@ -392,32 +387,26 @@ pre {
 #wrapperpage-contentleft3 {
   grid-area: contentleft3;
   padding: 10px;
-  text-align: justify;
 }
 #wrapperpage-contentright3 {
   grid-area: contentright3;
   padding: 10px;
-  text-align: justify;
 }
 #wrapperpage-contentleft4 {
   grid-area: contentleft4;
   padding: 10px;
-  text-align: justify;
 }
 #wrapperpage-contentright4 {
   grid-area: contentright4;
   padding: 10px;
-  text-align: justify;
 }
 #wrapperpage-contentleft5 {
   grid-area: contentleft5;
   padding: 10px;
-  text-align: justify;
 }
 #wrapperpage-contentright5 {
   grid-area: contentright5;
   padding: 10px;
-  text-align: justify;
 }
 #wrapperpage-right { 
   grid-area: contentright;   
@@ -442,6 +431,11 @@ pre {
 
 #audioYoutubeClip {
   height: 50;
+  width: 100%;
+}
+
+#ContentYoutubeClip {
+  height: 100%;
   width: 100%;
 }
 
