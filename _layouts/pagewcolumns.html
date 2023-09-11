@@ -41,9 +41,11 @@ layout: defaultwcolumns
     </div>
   </div>
   <div id="wrapperpage-contentright1">
-    <!-- Show image or video -->
+    <!-- Show image or video or mailinglist signup-->
     {%- if page.contentimage1 -%}
       <img src="{{page.contentimage1 | relative_url}}" alt="" class="">
+    {%- elif page.mailinglist1 -%}
+      <iframe id="mailinglistSub" src="https://backend.hawkjames.com/subscribeToMailinglist" title="Join mailinglist" width="500" height="135" frameBorder="0"></iframe>  
     {%- else -%}
       <iframe id="audioYoutubeClip" width="360" height="360" src="{{ page.contentvideo1 }}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     {%- endif -%}
@@ -57,6 +59,8 @@ layout: defaultwcolumns
     <!-- Show image or video -->
     {%- if page.contentimage2 -%}
       <img src="{{page.contentimage2 | relative_url}}" alt="" class="">
+    {%- elif page.mailinglist2 -%}
+      <iframe id="mailinglistSub" src="https://backend.hawkjames.com/subscribeToMailinglist" title="Join mailinglist" width="500" height="135" frameBorder="0"></iframe> 
     {%- else -%}
       <iframe id="audioYoutubeClip" width="360" height="360" src="{{ page.contentvideo2 }}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     {%- endif -%}
@@ -117,6 +121,8 @@ layout: defaultwcolumns
     <!-- Show image or video -->
     {%- if page.contentimage3 -%}
       <img src="{{page.contentimage3 | relative_url}}" alt="" class="">
+    {%- elif page.mailinglist3 -%}
+      <iframe id="mailinglistSub" src="https://backend.hawkjames.com/subscribeToMailinglist" title="Join mailinglist" width="500" height="135" frameBorder="0"></iframe> 
     {%- else -%}
       <iframe id="audioYoutubeClip" width="360" height="360" src="{{ page.contentvideo3 }}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     {%- endif -%}
@@ -130,6 +136,8 @@ layout: defaultwcolumns
     <!-- Show image or video -->
     {%- if page.contentimage4 -%}
       <img src="{{page.contentimage4 | relative_url}}" alt="" class="">
+    {%- elif page.mailinglist4 -%}
+      <iframe id="mailinglistSub" src="https://backend.hawkjames.com/subscribeToMailinglist" title="Join mailinglist" width="500" height="135" frameBorder="0"></iframe> 
     {%- else -%}
       <iframe id="audioYoutubeClip" width="360" height="360" src="{{ page.contentvideo4 }}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     {%- endif -%}
@@ -190,6 +198,8 @@ layout: defaultwcolumns
     <!-- Show image or video -->
     {%- if page.contentimage5 -%}
       <img src="{{page.contentimage5 | relative_url}}" alt="" class="">
+    {%- elif page.mailinglist5 -%}
+      <iframe id="mailinglistSub" src="https://backend.hawkjames.com/subscribeToMailinglist" title="Join mailinglist" width="500" height="135" frameBorder="0"></iframe> 
     {%- else -%}
       <iframe id="audioYoutubeClip" width="360" height="360" src="{{ page.contentvideo5 }}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     {%- endif -%}

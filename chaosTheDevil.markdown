@@ -24,19 +24,20 @@ content3List:
 - Support for ultra wide aspect ratios
 - High detail quality textures
 - Smoother animation
-contentimage3: /assets/Images/ChaosScreen2.jpg
+contentimage3: /assets/Images/HiLowComparison.jpg
 contenttitle4: "Original soundtrack"
 content4:
 - Chaos the Devil offers a completely original score to compliment it's retro feel.
 - Each track designed to perfectly match the level setting.
 - Full in development soundtrack is currently available on YouTube
-contentimage4: /assets/Images/ChaosScreen2.jpg
+contentvideo4: https://www.youtube.com/embed/vfQB4kRcDxo
 contentlink4: /indiedev/update/2022/07/11/HowToMakeMusic.html
 contenttitle5: "Sign up to test"
 content5:
 - Chaos the Devil is about to move to private alpha testing.
 - If you would like to get involved by becoming a tester of a 3D retro platformer at an early stage. Sign up to my mailing list to receive the early notification email when alpha testing sign-up opens to the public.
-contentimage5: /assets/Images/ChaosScreen2.jpg
+mailinglist5: showSignup
 ---
 # A new retro 3D platformer
 Chaos the Devil is a 3D platformer currently in development which aims to capture PS1 golden day aesthetics and mechanics. Heavily inspired by titles such as Crash Bandicoot and Spyro the Dragon, Chaos the Devil embraces old gaming paradigms, graphics techniques, and limitations of the 90s to offer a whole new adventure!
+
