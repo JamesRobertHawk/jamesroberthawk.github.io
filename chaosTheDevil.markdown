@@ -3,28 +3,28 @@ layout: pagewcolumns
 title: ChaosTheDevil
 permalink: /ChaosTheDevil/
 image: /assets/Images/ChaosTheDevilCover.jpg
-contenttitle1: "Engine"
+contenttitle1: "Ps1 style Graphics"
 content1: 
+- A bespoke graphics pipeline was created to emulate the style of PS1 platfomer classics.
+- The rendering style is based on modern concepts and focusses on achieving retro PS1 feel, render artifacts and all.
+contentimage1: /assets/Images/ChaosScreen2.jpg
+contentlink1: /indiedev/update/2022/06/02/rendering-ps1.html
+contenttitle2: "Modern style Graphics"
+content2: 
+- With the popularity of remastered releases of the classic platformers on the rise. Chaos The Devil offers a high fidelity gameplay option.
+content2List:
+- Play in full HD
+- Support for modern aspect ratios
+- Smoother animation
+- Modern texture filtering
+contentimage2: /assets/Images/HiLowComparison.jpg
+contenttitle3: "Engine"
+content3: 
 - Chaos The Devil is being developed on my own Engine.
 - Using Hawk Engine rather than the usual commercial engines helps guide development to a simpler feel by restricting functionality.
 - The engine is written in C++ with a graphics implementation in OpenGL.
-contentvideo1: https://www.youtube.com/embed/Fwwv9GifkFM
-contentlink1: /HawkEngine/
-contenttitle2: "Ps1 style Graphics"
-content2: 
-- A bespoke graphics pipeline was created to emulate the style of PS1 platfomer classics.
-- The rendering style is based on modern concepts and focusses on achieving retro PS1 feel, render artifacts and all.
-contentimage2: /assets/Images/ChaosScreen2.jpg
-contentlink2: /indiedev/update/2022/06/02/rendering-ps1.html
-contenttitle3: "Modern style Graphics"
-content3: 
-- With the popularity of remastered releases of the classic platformers on the rise. Chaos The Devil offers a high fidelity gameplay option.
-content3List:
-- Play in full HD
-- Support for ultra wide aspect ratios
-- High detail quality textures
-- Smoother animation
-contentimage3: /assets/Images/HiLowComparison.jpg
+contentimage3: /assets/Images/HawkEngineStructure.jpg
+contentlink3: /HawkEngine/
 contenttitle4: "Original soundtrack"
 content4:
 - Chaos the Devil offers a completely original score to compliment it's retro feel.
