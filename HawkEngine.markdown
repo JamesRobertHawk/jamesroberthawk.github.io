@@ -27,7 +27,7 @@ content4:
 - Hawk Engine offers a generic solution for any game genre.
 - Gui tooling is supported via exposed hooks.
 - Targeted gui editors for your game title create more manageable and efficient game development workflows.
-contentimage1: /assets/Images/ChaosEditor.jpg
+contentimage4: /assets/Images/ChaosEditor.jpg
 contenttitle5: "Availability"
 content5: 
 - Hawk Engine is currently not scheduled for release.
