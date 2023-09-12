@@ -26,13 +26,14 @@ contenttitle4: "Separated tooling"
 content4: 
 - Hawk Engine offers a generic solution for any game genre.
 - Gui tooling is supported via exposed hooks.
-- Manageable gamedev workflows can be created by creating targetted gui editors for your game title.
-contentvideo4: https://www.youtube.com/embed/Fwwv9GifkFM
+- Targeted gui editors for your game title create more manageable and efficient game development workflows.
+contentimage1: /assets/Images/ChaosEditor.jpg
 contenttitle5: "Availability"
 content5: 
 - Hawk Engine is currently not scheduled for release.
+- Subscribe to my mailing list for updates on this project and more.
 - If you are interested in finding more information about this tech, please visit my general enquires page.
-contentvideo5: https://www.youtube.com/embed/Fwwv9GifkFM
+mailinglist5: showSignup
 
 ---
 
