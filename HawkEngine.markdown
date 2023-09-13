@@ -10,12 +10,12 @@ content1:
 - The engine allows you to clearly isolate small segments of complex systems to speed up development.
 - Common components used to make the larger systems can be easily reused, aiding development efficiency.
 contentimage1: /assets/Images/HawkEngineStructure.jpg
-contenttitle2: "Dev role seperation"
+contenttitle2: "Dev role separation"
 content2List:
 - Core engine programming written platform agnostically in c++. Responsible for core features, memory management, game loop and interfaces
 - Component implementation written in c++. Responsible for component interface implementation to create functionality for features like graphics devices and physics engines.
 - Component scripting written in lua. Responsible for utilising components, adding custom game scripting and overall game design.
-contentvideo2: https://www.youtube.com/embed/Fwwv9GifkFM
+contentimage1: /assets/Images/RoleSep.jpg
 contenttitle3: "Implicitly Parallel"
 content3: 
 - Hawk Engine calculates component relationships at load to produce execution order.
