@@ -15,7 +15,7 @@ content2List:
 - Core engine programming written platform agnostically in c++. Responsible for core features, memory management, game loop and interfaces
 - Component implementation written in c++. Responsible for component interface implementation to create functionality for features like graphics devices and physics engines.
 - Component scripting written in lua. Responsible for utilising components, adding custom game scripting and overall game design.
-contentimage3: /assets/Images/RoleSep.jpg
+contentimage2: /assets/Images/RoleSep.jpg
 contenttitle3: "Implicitly Parallel"
 content3: 
 - Hawk Engine calculates component relationships at load to produce execution order.
