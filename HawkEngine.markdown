@@ -19,9 +19,11 @@ contentimage2: /assets/Images/RoleSep.jpg
 contenttitle3: "Implicitly Parallel"
 content3: 
 - Hawk Engine calculates component relationships at load to produce execution order.
-- Unrelated components update asynchronously without input from the designer.
+- Components are then split into layers which respect update order.
+- Components in the same layer update asynchronously without input from the designer.
+- Designer can override load layer to refine thread load.
 - All synchrony can be turned off to simplify debugging.
-contentvideo3: https://www.youtube.com/embed/Fwwv9GifkFM
+contentimage3: /assets/Images/ThreadsEngine.jpg
 contenttitle4: "Separated tooling"
 content4: 
 - Hawk Engine offers a generic solution for any game genre.
