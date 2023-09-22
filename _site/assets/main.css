@@ -215,6 +215,10 @@ hr { border-color: #e8e8e8; }
 
 @media screen and (max-width: 800px) { .post-title { font-size: 36px; } }
 
+.post-sub-title { font-size: 32px; letter-spacing: -1px; line-height: 1; color: #828282; }
+
+@media screen and (max-width: 800px) { .post-sub-title { font-size: 32px; } }
+
 .post-content { margin-bottom: 30px; }
 
 .post-content h2 { font-size: 32px; }

@@ -4,6 +4,7 @@ title: AAAGames
 permalink: /AAAGames/
 image: /assets/Images/CoverAAA.jpg
 contenttitle1: "EVE Online"
+contentsubtitle1: "Engine Programmer"
 content1:
 - Currently an Engine Programmer at CCP Games working on core tech for MMORPG EVE Online.
 content1List:
@@ -15,6 +16,7 @@ content1List:
 - Modernising build system to cmake
 contentvideo1: https://www.youtube.com/embed/sPFII3ozSHI
 contenttitle2: "Total War Rome II"
+contentsubtitle2: "Graphics Programmer"
 content2: Graphics programmer at The Creative Assembly during early development of RomeII.
 content2List:
 - Rearchitecture of Texture loading interfaces

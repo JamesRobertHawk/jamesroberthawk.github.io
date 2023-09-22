@@ -18,6 +18,10 @@ layout: defaultwcolumns
     <div class="column-contents">
       <h1 class="post-title">{{ page.contenttitle1 | escape }}</h1>
 
+      {%- if page.contentsubtitle1 -%}
+        <h1 class="post-sub-title">{{ page.contentsubtitle1 | escape }}</h1>
+      {%- endif -%}
+
       {% for content1 in page.content1 %}
         <p>{{ content1 | textilize }}</p>
         <br>
@@ -68,6 +72,11 @@ layout: defaultwcolumns
   <div id="wrapperpage-contentright2">
     <div class="column-contents">
       <h1 class="post-title">{{ page.contenttitle2 | escape }}</h1>
+
+      {%- if page.contentsubtitle2 -%}
+        <h1 class="post-sub-title">{{ page.contentsubtitle2 | escape }}</h1>
+      {%- endif -%}
+
       {% for content2 in page.content2 %}
         <p>{{ content2 | textilize }}</p>
         <br>
@@ -96,6 +105,11 @@ layout: defaultwcolumns
   <div id="wrapperpage-contentleft3">
     <div class="column-contents">
       <h1 class="post-title">{{ page.contenttitle3 | escape }}</h1>
+
+      {%- if page.contentsubtitle3 -%}
+        <h1 class="post-sub-title">{{ page.contentsubtitle3 | escape }}</h1>
+      {%- endif -%}
+
       {% for content3 in page.content3 %}
         <p>{{ content3 | textilize }}</p>
         <br>
@@ -145,6 +159,11 @@ layout: defaultwcolumns
   <div id="wrapperpage-contentright4">
     <div class="column-contents">
       <h1 class="post-title">{{ page.contenttitle4 | escape }}</h1>
+
+      {%- if page.contentsubtitle4 -%}
+        <h1 class="post-sub-title">{{ page.contentsubtitle4 | escape }}</h1>
+      {%- endif -%}
+
       {% for content4 in page.content4 %}
         <p>{{ content4 | textilize }}</p>
         <br>
@@ -173,6 +192,11 @@ layout: defaultwcolumns
   <div id="wrapperpage-contentleft5">
     <div class="column-contents">
       <h1 class="post-title">{{ page.contenttitle5 | escape }}</h1>
+
+      {%- if page.contentsubtitle5 -%}
+        <h1 class="post-sub-title">{{ page.contentsubtitle5 | escape }}</h1>
+      {%- endif -%}
+
       {% for content5 in page.content5 %}
         <p>{{ content5 | textilize }}</p>
         <br>
