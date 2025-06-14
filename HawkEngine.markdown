@@ -2,7 +2,7 @@
 layout: pagewcolumns
 title: HawkEngine
 permalink: /HawkEngine/
-image: /assets/Images/EngineCover.jpg
+image: /assets/Images/EngineCover.png
 contenttitle1: "Distributed design"
 content1: 
 - Hawk Engine uses a micro-service approach to game development where each game component is treated as a separate micro-system. 
@@ -39,5 +39,5 @@ mailinglist5: showSignup
 
 ---
 
-# An engine focussed on distributed design and asynchronous patterns
+# Ground up proprietary engine
 HawkEngine is being designed along side my game project ChaosTheDevil. It is designed to offer a flexible system which can scale as a project grows. HawkEngine contains interfaces aimed at game development, however the core of the engine can be used for any micro-service style application.

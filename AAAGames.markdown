@@ -4,11 +4,12 @@ title: AAAGames
 permalink: /AAAGames/
 image: /assets/Images/CoverAAA.jpg
 contenttitle1: "EVE Online"
-contentsubtitle1: "Engine Programmer"
+contentsubtitle1: "Senior Engine Programmer"
 content1:
-- Currently an Engine Programmer at CCP Games working on core tech for MMORPG EVE Online.
+- Currently a Senior Engine Programmer at CCP Games working on core tech for MMORPG EVE Online.
 content1List:
 - Proprietary engine development
+- Task scheduling
 - CDN and deployment support
 - Resource management
 - CI development

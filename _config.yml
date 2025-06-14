@@ -21,13 +21,12 @@
 title: James Hawk
 email: jamesroberthawk@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
-  Engine Programmer at CCP Games, working on EVE Online. Indie developer
-  working on HawkEngine and PS1 style 3D platformer. Unity 3D asset creator.
+  Senior Engine Programmer at CCP Games, working on EVE Online. Indie developer
+  working on HawkEngine and PS1 style 3D platformer.
 baseurl: "" # the subpath of your site, e.g. /blog
 domain: jamesroberthawk.github.io
 url: "https://jamesroberthawk.github.io" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: jamesroberthawk
-github_username:  jamesroberthawk
+github_username:  CCPCookies
 google_analytics: G-QYB26L4754
 
 # Build settings

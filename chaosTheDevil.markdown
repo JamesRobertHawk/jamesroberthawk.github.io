@@ -3,27 +3,24 @@ layout: pagewcolumns
 title: ChaosTheDevil
 permalink: /ChaosTheDevil/
 image: /assets/Images/ChaosTheDevilCover.jpg
-contenttitle1: "Ps1 style Graphics"
+contenttitle1: "The golden age"
 content1: 
+- Fully embraces old mechanics.
+- Rejects modern takes, just old fashioned fun.
+- Tough levels, varied vibrant environments and wacky characters.
+contentimage1: /assets/Images/ChaosTheDevilScreen3.png
+contenttitle2: "Ps1 style Graphics"
+content2: 
 - A bespoke graphics pipeline was created to emulate the style of PS1 platfomer classics.
 - The rendering style is based on modern concepts and focusses on achieving retro PS1 feel, render artifacts and all.
-contentimage1: /assets/Images/ChaosScreen2.jpg
-contentlink1: /indiedev/update/2022/06/02/rendering-ps1.html
-contenttitle2: "Modern style Graphics"
-content2: 
-- With the popularity of remastered releases of the classic platformers on the rise. Chaos The Devil offers a high fidelity gameplay option.
-content2List:
-- Play in full HD
-- Support for modern aspect ratios
-- Smoother animation
-- Modern texture filtering
-contentimage2: /assets/Images/HiLowComparison.jpg
+contentimage2: /assets/Images/ChaosTheDevilScreen1.png
+contentlink2: /indiedev/update/2022/06/02/rendering-ps1.html
 contenttitle3: "Engine"
 content3: 
 - Chaos The Devil is being developed on my own Engine.
 - Using Hawk Engine rather than the usual commercial engines helps guide development to a simpler feel by restricting functionality.
 - The engine is written in C++ with a graphics implementation in OpenGL.
-contentimage3: /assets/Images/HawkEngineStructure.jpg
+contentimage3: /assets/Images/ChaosTheDevilScreen2.png
 contentlink3: /HawkEngine/
 contenttitle4: "Original soundtrack"
 content4:

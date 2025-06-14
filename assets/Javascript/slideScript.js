@@ -30,11 +30,3 @@ function onSlide2Click(){
 function onSlide3Click(){
 	window.location.href = "IndieGames/";
 }
-
-function onSlide4Click(){
-	window.location.href = "Assets/";
-}
-
-function onSlide5Click(){
-	window.location.href = "Assets/";
-}
