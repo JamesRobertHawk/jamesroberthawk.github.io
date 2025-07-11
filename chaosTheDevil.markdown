@@ -38,3 +38,10 @@ mailinglist5: showSignup
 # A new retro 3D platformer
 Chaos the Devil is a 3D platformer currently in development which aims to capture PS1 golden day aesthetics and mechanics. Heavily inspired by titles such as Crash Bandicoot and Spyro the Dragon, Chaos the Devil embraces old gaming paradigms, graphics techniques, and limitations of the 90s to offer a whole new adventure!
 
+<br>
+
+## Wishlist now!
+
+<br>
+
+<iframe src="https://store.steampowered.com/widget/3849330/" frameborder="0" width="100%" height="190"></iframe>

@@ -4,7 +4,7 @@ title:  "Vertical slice postmortem for Chaos the devil."
 date:   2021-09-02 10:45:19 +0000
 categories: indiedev update
 image: /assets/Images/ChaosTheDevilCover.jpg
-nextpost: "Creating a Steam Capsule"
+nextpost: "Chaos the Devil Steam page launched"
 ---
 
 ![Chaos the devil vertical slice screens](/assets/Images/Blog/VerticalSlice.jpg){:class="blog-img"}
