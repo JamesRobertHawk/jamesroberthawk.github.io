@@ -76,7 +76,7 @@ Chaos the Devil now has a home. The [Steam creator page](https://store.steampowe
 
 <br>
 
-The logo was designed to illicit the style of classic logos of the 90s to fit with the game titles of the same era. Simple, straight lines with spectrums of colour.
+The logo was designed to elicit the style of classic logos of the 90s to fit with the game titles of the same era. Simple, straight lines with spectrums of colour.
 
 ![Accipitus Logo](/assets/Images/Blog/SteamReleaseArticle/Accipitus.jpg){:class="blog-img"}
 
