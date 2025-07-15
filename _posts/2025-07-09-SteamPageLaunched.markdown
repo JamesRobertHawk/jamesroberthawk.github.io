@@ -17,7 +17,7 @@ It has been a long journey. I am thrilled to finally be at the point to share my
 
 # Wishlist now!
 
-<iframe src="https://store.steampowered.com/widget/3849330/?utm_source=homepage" frameborder="0" height="190" width="100%"></iframe>
+<iframe src="https://store.steampowered.com/widget/3849330/" frameborder="0" height="190" width="100%"></iframe>
 
 <br>
 

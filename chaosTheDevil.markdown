@@ -44,4 +44,4 @@ Chaos the Devil is a 3D platformer currently in development which aims to captur
 
 <br>
 
-<iframe src="https://store.steampowered.com/widget/3849330/?utm_source=homepage" frameborder="0" width="100%" height="190"></iframe>
+<iframe src="https://store.steampowered.com/widget/3849330/" frameborder="0" width="100%" height="190"></iframe>
