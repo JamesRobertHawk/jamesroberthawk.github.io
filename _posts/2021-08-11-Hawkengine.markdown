@@ -4,7 +4,7 @@ title:  "Hawkengine development started"
 date:   2021-05-11 10:20:01 +0000
 categories: indiedev update
 image: /assets/Images/CoverAAA.jpg
-nextpost: "Chaos the devil announcement"
+nextpost: "Tips for optimising Lua"
 ---
 
 I am not one for small tech demos, I don't find it too interesting to see a single rendered room with some fabric flying around. 

@@ -19,18 +19,14 @@
 # in the templates via {{ site.myvariable }}.
 
 title: James Hawk
-email: jamesroberthawk@gmail.com
+email:
 description: >- # this means to ignore newlines until "baseurl:"
-  Senior Engine Programmer at CCP Games, working on EVE Online. Indie developer
-  working on HawkEngine and PS1 style 3D platformer.
+  Senior Engine Programmer at CCP Games, working on EVE Online.
 baseurl: "" # the subpath of your site, e.g. /blog
 domain: jamesroberthawk.github.io
 url: "https://jamesroberthawk.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  CCPCookies
 google_analytics: G-QYB26L4754
-instagram_username: chaosthedevil
-youtube_username: "@jameshawk3464"
-tiktok_username: "@hawk4084"
 
 # Build settings
 theme: minima

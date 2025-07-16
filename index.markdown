@@ -5,9 +5,9 @@
 layout: home
 title: index
 featuredpost: "Hawkengine development started"
-featuredprogrammingpost: "Vertical slice postmortem for Chaos the devil."
+featuredprogrammingpost: "Tips for optimising Lua"
 featuredgraphicspost: "Rendering in Playstation 1 style in OpenGL"
-featuredartpost: "Creating a Steam Capsule"
+featuredengineeringpost: "Hawkengine development started"
 featuredaudiopost: "How to make music for your indie game"
 ---
 # Hello there!

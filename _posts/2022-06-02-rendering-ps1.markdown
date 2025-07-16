@@ -22,7 +22,7 @@ When creating a brand new Hello World OpenGL project, you will have in front of 
 5. [Conclusion](#conclusion)
 
 # Motivation
-I am developing an old-school 3D platformer [Chaos The Devil]({% post_url 2021-08-11-chaos-the-devil-announcement %}). 
+I am developing an old-school 3D platformer. 
 
 The idea is to recreate the look and feel of PS1 greats like Crash Bandicoot and Spyro The Dragon.
 
@@ -516,17 +516,9 @@ This is where I am going to leave things for this render development pass. Howev
 # Conclusion
 Attempting to recreate the PS1 style of rendering is very far-reaching and touches on many different development areas. It amuses me to see the number of techniques usually employed to make a game render become more crisp and shiny but instead used here to make the game jaggy, jitterery, muddy and inaccurate.
 
-The result achieved matches my spec and this is how [Chaos The Devil]({% post_url 2021-08-11-chaos-the-devil-announcement %}) achieves PS1 rendering.
-
 The technique is limiting, especially the false painters algorithm. Separation between coding and art is not really possible- art needs to be created with the rendering limitations in mind.
 
-# What next?
-
-Development of [Chaos The Devil]({% post_url 2021-08-11-chaos-the-devil-announcement %}) is full steam ahead and I hope to have a playable demo of the first 8 levels available by the end of the year. 
-
 **Watch this space.**
-
-And if PS1 game dev is your thing, or if you have any questions, follow me on Twitter [@JamesRobertHawk](http://www.twitter.com/JamesRobertHawk) and continue to follow my development of [Chaos The Devil]({% post_url 2021-08-11-chaos-the-devil-announcement %}).
 
 I am going to create more articles like this during the development of the game. I am currently working on an audio pass so if that's your thing, drop back again soon.
 
