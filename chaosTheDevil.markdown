@@ -34,8 +34,8 @@ content4List:
 contentimage4: /assets/Images/LobbyShort.gif
 contenttitle5: "Sign up to test"
 content5:
-- Chaos the Devil is about to move to private alpha testing.
-- If you would like to get involved by becoming a tester of a 3D retro platformer at an early stage. Sign up to my mailing list to receive the early notification email when alpha testing sign-up opens to the public.
+- Chaos the Devil is currently running a public playtest.
+- If you would like to get involved by becoming a tester of a 3D retro platformer at an early stage. Head to the Steam page, click 'join the Playtest' to get instant access. Join the discord to give feedback.
 mailinglist5: showSignup
 ---
 # A new retro 3D platformer
