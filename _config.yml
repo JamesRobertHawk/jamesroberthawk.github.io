@@ -27,6 +27,8 @@ domain: jamesroberthawk.github.io
 url: "https://jamesroberthawk.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  CCPCookies
 google_analytics: G-QYB26L4754
+youtube_username: "@AccipitusGames"
+tiktok_username: "@AccipitusGames"
 
 # Build settings
 theme: minima
